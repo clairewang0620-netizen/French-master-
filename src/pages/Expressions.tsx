@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { expressionData } from '../data/mockData';
 import { TTSButton } from '../components/TTSButton';
-import { ArrowLeft, MessageSquare, MapPin, Coffee, User, Briefcase, Zap, ChevronRight, PlayCircle } from 'lucide-react';
+import { ArrowLeft, MessageSquare, MapPin, Coffee, User, Briefcase, Zap, ChevronRight, PlayCircle, Star } from 'lucide-react';
 import clsx from 'clsx';
 import { speakFrench } from '../lib/tts';
 
@@ -22,79 +22,52 @@ export default function Expressions() {
 
   const categories = Array.from(new Set(expressionData.map(e => e.category)));
 
-  const handlePlaySentence = async (text: string, id: string, e?: React.MouseEvent) => {
-    e?.stopPropagation();
+  const handlePlaySentence = async (text: string, id: string) => {
     setActiveSentenceId(id);
     await speakFrench(text);
+    setTimeout(() => setActiveSentenceId(null), 3000);
   };
 
   if (activeCategory) {
     const sentences = expressionData.filter(e => e.category === activeCategory);
     const config = CATEGORY_CONFIG[activeCategory] || CATEGORY_CONFIG['默认'];
-    const progress = activeSentenceId ? sentences.findIndex(s => s.id === activeSentenceId) + 1 : 0;
-    const progressPercent = Math.min((progress / sentences.length) * 100, 100);
 
     return (
-      <div className="space-y-6 max-w-2xl mx-auto pb-10">
-         <button onClick={() => setActiveCategory(null)} className="flex items-center text-slate-500 hover:text-brand-600 font-medium transition-colors mb-2">
-          <ArrowLeft size={20} className="mr-2" /> 返回场景列表
+      <div className="space-y-8 max-w-3xl mx-auto pb-20 px-1">
+         <button onClick={() => setActiveCategory(null)} className="flex items-center text-slate-500 hover:text-brand-600 font-black mb-2">
+          <ArrowLeft size={24} className="mr-2" /> 返回分类
         </button>
 
-        {/* 修复：Sticky 头部，确保 z-index 正确 */}
-        <header className="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg sticky top-[72px] md:top-4 z-40 transition-all">
-          <div className="flex items-center gap-4 mb-4">
-            <div className={`w-12 h-12 rounded-2xl ${config.color} flex items-center justify-center text-2xl shadow-sm`}>
-              {config.emoji}
-            </div>
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-slate-900">{activeCategory}</h1>
-              <div className="flex items-center gap-2 text-xs md:text-sm font-medium text-slate-500 mt-1">
-                 <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">{sentences.length} 句表达</span>
-                 <span className="hidden sm:inline">· 点击句子即可听音</span>
-              </div>
-            </div>
+        <header className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-xl flex items-center gap-6">
+          <div className={`w-20 h-20 rounded-[28px] ${config.color} flex items-center justify-center text-4xl shadow-inner`}>
+            {config.emoji}
           </div>
-          <div className="flex items-center gap-3">
-             <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-brand-500 transition-all duration-500 ease-out" style={{ width: `${progressPercent}%` }}></div> 
-             </div>
-             <span className="text-xs font-bold text-slate-400 whitespace-nowrap min-w-[3rem] text-right">
-               {progress} / {sentences.length}
-             </span>
+          <div>
+            <h1 className="text-3xl font-black text-slate-900">{activeCategory}</h1>
+            <p className="text-slate-500 font-bold mt-1">{sentences.length} 个精选句子</p>
           </div>
         </header>
 
-        <div className="space-y-3 mt-4">
+        <div className="space-y-4">
           {sentences.map((expr, idx) => {
             const isActive = activeSentenceId === expr.id;
             return (
               <div 
                 key={expr.id} 
-                onClick={() => handlePlaySentence(expr.fr, expr.id)}
                 className={clsx(
-                  "group p-5 rounded-2xl border transition-all cursor-pointer relative overflow-hidden select-none",
-                  isActive 
-                    ? `bg-brand-50 border-brand-300 shadow-md ring-1 ring-brand-200`
-                    : "bg-white border-slate-100 hover:border-brand-200 hover:shadow-sm"
+                  "p-8 rounded-[32px] border-2 transition-all bg-white relative overflow-hidden group",
+                  isActive ? "border-[#7ED957] shadow-xl" : "border-slate-100 hover:border-brand-200"
                 )}
               >
-                <div className="flex gap-4 items-start relative z-10">
-                  <div className={clsx(
-                    "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mt-1",
-                    isActive ? "bg-brand-500 text-white" : "bg-slate-100 text-slate-400 group-hover:bg-brand-100 group-hover:text-brand-600"
-                  )}>
-                    {idx + 1}
+                <div className="flex flex-col gap-4 relative z-10">
+                  <div className="flex justify-between items-start">
+                    <span className="text-xs font-black text-slate-300 uppercase tracking-widest">Phrase #{idx + 1}</span>
+                    <TTSButton text={expr.fr} size="sm" label="发音" />
                   </div>
-                  <div className="flex-1 space-y-1">
-                     <h3 className={clsx("text-lg font-bold leading-snug", isActive ? "text-brand-700" : "text-slate-800")}>{expr.fr}</h3>
-                     <p className="text-sm font-mono text-slate-400 bg-slate-50 px-1.5 rounded inline-block">{expr.ipa}</p>
-                     <p className={clsx("text-base pt-1", isActive ? "text-slate-700" : "text-slate-500")}>{expr.cn}</p>
-                  </div>
-                  <div className={clsx(
-                    "absolute right-0 top-0 p-5 transition-all transform",
-                    isActive ? "opacity-100 scale-100 text-brand-500" : "opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 text-slate-300"
-                  )}>
-                    <PlayCircle size={24} />
+                  <div className="space-y-2">
+                     <h3 className="text-2xl font-black text-slate-900 leading-tight">{expr.fr}</h3>
+                     <p className="text-sm font-mono text-slate-400 font-bold italic">{expr.ipa}</p>
+                     <p className="text-xl text-slate-600 font-bold pt-2">{expr.cn}</p>
                   </div>
                 </div>
               </div>
@@ -106,12 +79,13 @@ export default function Expressions() {
   }
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">场景会话</h1>
-        <p className="text-slate-600 mt-1">300句地道口语，覆盖核心生活场景</p>
+    <div className="space-y-10">
+      <header className="space-y-1">
+        <h1 className="text-4xl font-black text-slate-900 tracking-tight">场景常用语</h1>
+        <p className="text-slate-500 font-bold text-lg">地道口语表达，覆盖核心生活场景</p>
       </header>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.map((cat: string) => {
           const config = CATEGORY_CONFIG[cat] || CATEGORY_CONFIG['默认'];
           const count = expressionData.filter(e => e.category === cat).length;
@@ -119,21 +93,21 @@ export default function Expressions() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className="group bg-white p-6 rounded-3xl border border-slate-100 hover:border-brand-300 hover:shadow-xl hover:-translate-y-1 transition-all text-left flex flex-col items-start relative overflow-hidden"
+              className="group bg-white p-8 rounded-[40px] border border-slate-100 hover:border-brand-400 hover:shadow-2xl transition-all text-left flex flex-col items-start relative overflow-hidden h-64 justify-between"
             >
-              <div className={`w-14 h-14 rounded-2xl ${config.color} flex items-center justify-center mb-4 text-3xl shadow-sm z-10 group-hover:scale-110 transition-transform`}>
+              <div className={`w-16 h-16 rounded-[24px] ${config.color} flex items-center justify-center text-3xl shadow-sm z-10 group-hover:scale-110 transition-transform`}>
                 {config.emoji}
               </div>
-              <div className="z-10 w-full">
-                <h3 className="text-xl font-bold text-slate-800 mb-1">{cat}</h3>
+              <div className="z-10 w-full space-y-2">
+                <h3 className="text-2xl font-black text-slate-900">{cat}</h3>
                 <div className="flex justify-between items-center w-full">
-                  <p className="text-slate-400 text-sm font-medium">{count} 句表达</p>
-                  <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-brand-500 group-hover:text-white transition-all opacity-0 group-hover:opacity-100">
-                    <ChevronRight size={18} />
+                  <p className="text-slate-400 font-bold">{count} 句地道表达</p>
+                  <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-brand-500 group-hover:text-white transition-all shadow-sm">
+                    <ChevronRight size={22} />
                   </div>
                 </div>
               </div>
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-slate-50 rounded-full opacity-50 group-hover:bg-brand-50 transition-colors z-0"></div>
+              <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-slate-50 rounded-full opacity-40 z-0 group-hover:bg-brand-50 transition-colors"></div>
             </button>
           );
         })}

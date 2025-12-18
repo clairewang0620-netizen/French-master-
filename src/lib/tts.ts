@@ -1,62 +1,101 @@
 
 /**
- * TTS Service (Text-to-Speech)
- * Handles browser differences, voice loading, and iOS quirks.
+ * Advanced TTS Service for Cross-Platform Compatibility (Android & iOS)
  */
 
-let voices: SpeechSynthesisVoice[] = [];
-let frenchVoice: SpeechSynthesisVoice | null = null;
+class TTSService {
+  private voices: SpeechSynthesisVoice[] = [];
+  private selectedVoice: SpeechSynthesisVoice | null = null;
+  private isInitialized: boolean = false;
+  private queue: string[] = [];
+  private currentIdx: number = -1;
+  private onEndCallback?: () => void;
 
-const loadVoices = (): Promise<void> => {
-  return new Promise((resolve) => {
-    const existing = window.speechSynthesis.getVoices();
-    if (existing.length > 0) {
-      voices = existing;
-      selectFrenchVoice();
-      resolve();
+  constructor() {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      this.init();
+    }
+  }
+
+  private init() {
+    const loadVoices = () => {
+      this.voices = window.speechSynthesis.getVoices();
+      this.selectedVoice = 
+        this.voices.find(v => v.lang === 'fr-FR' && v.name.includes('Google')) ||
+        this.voices.find(v => v.lang === 'fr-FR') ||
+        this.voices.find(v => v.lang.startsWith('fr')) ||
+        null;
+      
+      if (this.voices.length > 0) {
+        this.isInitialized = true;
+      }
+    };
+
+    loadVoices();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }
+
+  public async stop() {
+    window.speechSynthesis.cancel();
+    this.queue = [];
+    this.currentIdx = -1;
+  }
+
+  public async speak(text: string, onEnd?: () => void) {
+    await this.stop();
+    this.onEndCallback = onEnd;
+
+    // Split text for sequential playback (Android requirement for long strings)
+    // Split by common punctuation to keep sentences natural
+    this.queue = text.split(/([.!?\n]+)/).reduce((acc: string[], cur, i) => {
+      if (i % 2 === 0) {
+        if (cur.trim()) acc.push(cur.trim());
+      } else {
+        if (acc.length > 0) acc[acc.length - 1] += cur;
+      }
+      return acc;
+    }, []);
+
+    if (this.queue.length === 0) return;
+    
+    this.currentIdx = 0;
+    this.playNext();
+  }
+
+  private playNext() {
+    if (this.currentIdx >= this.queue.length) {
+      if (this.onEndCallback) this.onEndCallback();
       return;
     }
 
-    window.speechSynthesis.onvoiceschanged = () => {
-      voices = window.speechSynthesis.getVoices();
-      selectFrenchVoice();
-      resolve();
+    const utterance = new SpeechSynthesisUtterance(this.queue[this.currentIdx]);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
+    
+    if (this.selectedVoice) {
+      utterance.voice = this.selectedVoice;
+    }
+
+    utterance.onend = () => {
+      // Small delay for Android stability
+      setTimeout(() => {
+        this.currentIdx++;
+        this.playNext();
+      }, 150);
     };
-  });
-};
 
-const selectFrenchVoice = () => {
-  frenchVoice = 
-    voices.find(v => v.name === 'Google français' && v.lang === 'fr-FR') ||
-    voices.find(v => v.name === 'Thomas' && v.lang.startsWith('fr')) ||
-    voices.find(v => v.name === 'Amelie' && v.lang.startsWith('fr')) ||
-    voices.find(v => v.lang === 'fr-FR') ||
-    voices.find(v => v.lang.startsWith('fr')) ||
-    null;
-};
+    utterance.onerror = (e) => {
+      console.error('TTS Error:', e);
+      this.stop();
+    };
 
-export const speakFrench = async (text: string) => {
-  if (!('speechSynthesis' in window)) return;
-
-  if (!frenchVoice) {
-    await loadVoices();
+    window.speechSynthesis.speak(utterance);
   }
-
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  
-  if (frenchVoice) {
-    utterance.voice = frenchVoice;
-  }
-  
-  utterance.lang = 'fr-FR'; 
-  utterance.rate = 0.85; 
-  utterance.pitch = 1.0; // 校准为 1.0
-  utterance.volume = 1.0;
-  
-  window.speechSynthesis.speak(utterance);
-};
-
-if (typeof window !== 'undefined') {
-  loadVoices();
 }
+
+export const tts = new TTSService();
+
+export const speakFrench = (text: string) => tts.speak(text);

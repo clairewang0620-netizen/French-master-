@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { vocabularyData } from '../data/mockData';
 import { useUserProgress } from '../lib/store';
@@ -143,10 +142,10 @@ export default function Dictation() {
 
          <div className="mb-14 mt-6">
            <div className="flex justify-center mb-10">
+             {/* Fix: removed variant prop which is not defined in TTSButtonProps interface */}
              <TTSButton 
                text={currentWord.fr} 
                size="lg" 
-               variant="primary" 
                className="w-24 h-24 shadow-2xl shadow-brand-200 bg-brand-600 hover:bg-brand-500" 
              />
            </div>

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { vocabularyData } from '../data/mockData';
 import { useUserProgress } from '../lib/store';
@@ -9,11 +10,11 @@ import clsx from 'clsx';
 const LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1'];
 
 const MOTIVATION_TEXTS = [
-  "Excellent ! Continues comme ça ! 🔥",
-  "Bravo ! Ton accent est super 🇫🇷",
-  "Tu progresses très vite ! 🎓",
-  "C'est parfait ! ✨",
-  "Lâche rien ! 💪"
+  "太棒了！继续保持！ 🔥",
+  "好样的！发音非常地道 🇫🇷",
+  "进步飞快！加油 🎓",
+  "完美！ ✨",
+  "别放弃，你是最棒的！ 💪"
 ];
 
 export default function Vocabulary() {
@@ -27,7 +28,10 @@ export default function Vocabulary() {
   const enterFlashCard = (index: number) => {
     setFlashCardIndex(index);
   };
-  const exitFlashCard = () => setFlashCardIndex(null);
+  const exitFlashCard = () => {
+    setFlashCardIndex(null);
+    setShowFeedback(false);
+  };
 
   const prevCard = () => {
     if (flashCardIndex !== null && flashCardIndex > 0) {
@@ -44,14 +48,9 @@ export default function Vocabulary() {
     }
   };
 
-  // --- FLASH CARD MODE (Non-flipping, All Content Visible) ---
   if (flashCardIndex !== null) {
     const word = filteredWords[flashCardIndex];
-    
-    if (!word) {
-        setFlashCardIndex(null);
-        return null;
-    }
+    if (!word) { exitFlashCard(); return null; }
 
     const isFavorite = progress.favorites.includes(word.id);
     const hasNext = flashCardIndex < filteredWords.length - 1;
@@ -59,161 +58,120 @@ export default function Vocabulary() {
     const progressPercent = ((flashCardIndex + 1) / filteredWords.length) * 100;
 
     return (
-      <div className="max-w-md mx-auto h-[calc(100vh-100px)] flex flex-col">
-        <button onClick={exitFlashCard} className="flex items-center text-slate-500 mb-4 hover:text-brand-600 font-medium transition-colors">
-          <ArrowLeft size={20} className="mr-2" /> 退出学习
+      <div className="max-w-xl mx-auto h-[calc(100vh-120px)] flex flex-col space-y-4 px-2">
+        <button onClick={exitFlashCard} className="flex items-center text-slate-500 hover:text-brand-600 font-bold transition-colors">
+          <ArrowLeft size={22} className="mr-2" /> 退出学习
         </button>
         
-        {/* Progress Bar */}
-        <div className="mb-4 flex items-center gap-3">
-             <div className="h-2 bg-slate-100 rounded-full flex-1 overflow-hidden">
-               <div className="h-full bg-gradient-to-r from-brand-400 to-accent-500 transition-all duration-300 ease-out" style={{ width: `${progressPercent}%` }} />
+        <div className="flex items-center gap-4">
+             <div className="h-3 bg-slate-200 rounded-full flex-1 overflow-hidden shadow-inner">
+               <div className="h-full bg-brand-500 transition-all duration-500" style={{ width: `${progressPercent}%` }} />
              </div>
-             <span className="text-xs font-bold text-slate-500 whitespace-nowrap bg-white px-2 py-1 rounded-md shadow-sm border border-slate-100">
-               <span className={clsx(
-                 "mr-1",
-                 selectedLevel === 'A1' && "text-blue-500",
-                 selectedLevel === 'A2' && "text-green-500",
-                 selectedLevel === 'B1' && "text-yellow-500",
-                 selectedLevel === 'B2' && "text-orange-500",
-                 selectedLevel === 'C1' && "text-red-500",
-               )}>●</span>
+             <span className="text-xs font-black text-slate-400 bg-white px-3 py-1.5 rounded-full shadow-sm border">
                {selectedLevel} · {flashCardIndex + 1} / {filteredWords.length}
              </span>
         </div>
 
-        {/* Main Card */}
-        <div className="flex-1 relative group bg-white rounded-3xl shadow-xl border border-slate-100 overflow-y-auto no-scrollbar flex flex-col">
-           {/* Feedback Popup */}
+        <div className="flex-1 bg-white rounded-[40px] shadow-2xl border border-slate-100 overflow-y-auto flex flex-col relative">
            {showFeedback && (
-             <div className="absolute top-4 left-0 right-0 z-50 flex justify-center animate-in fade-in slide-in-from-top-2 duration-500">
-               <span className="bg-white border border-brand-100 text-brand-600 px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
-                 <Sparkles size={16} className="text-amber-400" /> {MOTIVATION_TEXTS[Math.floor(Math.random() * MOTIVATION_TEXTS.length)]}
+             <div className="absolute top-6 left-0 right-0 z-20 flex justify-center animate-bounce">
+               <span className="bg-white border-2 border-brand-100 text-brand-600 px-6 py-2 rounded-full text-sm font-black shadow-xl">
+                 {MOTIVATION_TEXTS[Math.floor(Math.random() * MOTIVATION_TEXTS.length)]}
                </span>
              </div>
            )}
 
-           {/* Word Header */}
-           <div className="bg-gradient-to-br from-brand-50/80 to-white p-8 pb-6 text-center border-b border-slate-50 sticky top-0 z-10 backdrop-blur-sm">
-              <div className="flex justify-center items-center gap-2 mb-2">
-                <h2 className="text-5xl font-bold text-slate-800 tracking-tight break-words">{word.fr}</h2>
-                <TTSButton text={word.fr} size="lg" variant="ghost" />
-              </div>
-              
-              <div className="flex justify-center items-center gap-3">
-                <span className="text-slate-400 font-mono text-lg bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">{word.ipa}</span>
+           <div className="p-10 text-center border-b border-slate-50 space-y-4">
+              <h2 className="text-6xl font-black text-slate-900 tracking-tighter break-words">{word.fr}</h2>
+              <div className="flex justify-center items-center gap-4">
+                <span className="text-xl text-slate-400 font-mono bg-slate-50 px-4 py-2 rounded-2xl border">{word.ipa}</span>
+                <TTSButton text={word.fr} size="lg" />
               </div>
            </div>
 
-           {/* Content Body */}
-           <div className="p-6 md:p-8 space-y-8">
-              {/* Meaning */}
-              <div className="text-center">
-                <p className="text-2xl text-slate-700 font-medium">{word.cn}</p>
-              </div>
+           <div className="p-8 md:p-10 space-y-10">
+              <p className="text-3xl text-center text-slate-700 font-bold">{word.cn}</p>
 
-              {/* Divider */}
-              <div className="flex items-center gap-4">
-                <div className="h-px bg-slate-100 flex-1"></div>
-                <span className="text-xs font-bold text-slate-300 uppercase tracking-widest">Exemples</span>
-                <div className="h-px bg-slate-100 flex-1"></div>
-              </div>
-
-              {/* Examples */}
-              <div className="space-y-4">
+              <div className="space-y-6">
+                <h4 className="text-xs font-black text-slate-300 uppercase tracking-[0.2em] text-center">Exemples (例句)</h4>
                 {word.examples.map((ex, idx) => (
-                  <div 
-                    key={idx} 
-                    className="p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brand-200 hover:bg-brand-50/30 transition-colors group cursor-pointer"
-                  >
-                     <div className="flex items-start gap-3">
-                        <div className="mt-1 flex-shrink-0">
-                          <TTSButton text={ex.fr} size="sm" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-slate-800 font-bold text-lg leading-snug group-hover:text-brand-800 transition-colors">{ex.fr}</p>
-                          {ex.ipa && <p className="text-slate-400 font-mono text-xs mt-0.5">{ex.ipa}</p>}
-                          <p className="text-slate-500 text-sm mt-1">{ex.cn}</p>
-                        </div>
-                     </div>
+                  <div key={idx} className="p-6 rounded-[24px] bg-slate-50 border border-slate-100 space-y-3">
+                     <p className="text-slate-900 font-black text-xl leading-tight">{ex.fr}</p>
+                     <p className="text-slate-500 font-bold">{ex.cn}</p>
+                     <TTSButton text={ex.fr} size="sm" label="发音" />
                   </div>
                 ))}
               </div>
            </div>
         </div>
 
-        {/* Bottom Actions */}
-        <div className="mt-6 p-4 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4 py-2">
            <button 
               onClick={prevCard}
               disabled={!hasPrev}
-              className="w-12 h-12 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center disabled:opacity-30 hover:bg-slate-200 active:scale-95 transition-all"
+              className="w-16 h-16 bg-white border border-slate-200 text-slate-400 rounded-[24px] flex items-center justify-center disabled:opacity-20 hover:bg-slate-50 active:scale-90 transition-all shadow-sm"
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft size={32} strokeWidth={3} />
             </button>
 
            <div className="flex-1 flex gap-3">
              <button 
                onClick={() => toggleFavorite(word.id)}
                className={clsx(
-                 "flex-1 py-3 rounded-xl font-bold border-2 flex items-center justify-center gap-2 transition-all active:scale-95 text-sm md:text-base",
+                 "flex-1 h-16 rounded-[24px] font-black flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md",
                  isFavorite 
-                  ? "border-orange-200 bg-orange-50 text-orange-600 shadow-sm" 
-                  : "border-slate-200 text-slate-500 hover:border-orange-200 hover:text-orange-500"
+                  ? "bg-[#E53935] text-white" 
+                  : "bg-white border-2 border-slate-200 text-slate-400 hover:border-[#E53935] hover:text-[#E53935]"
                )}
              >
-               <Flame size={18} fill={isFavorite ? "currentColor" : "none"} />
-               <span className="hidden sm:inline">{isFavorite ? "需复习" : "加强记忆"}</span>
+               <Flame size={20} fill={isFavorite ? "white" : "none"} />
+               <span>{isFavorite ? "已收藏" : "加强记忆"}</span>
              </button>
              
-             {/* Mastered Button */}
              <button 
                onClick={nextCard}
-               className="flex-1 bg-green-500 text-white border-2 border-green-500 rounded-xl font-bold hover:bg-green-600 shadow-md shadow-green-100 flex items-center justify-center gap-2 active:scale-95 transition-all text-sm md:text-base"
+               className="flex-1 h-16 bg-slate-900 text-white rounded-[24px] font-black flex items-center justify-center gap-2 active:scale-95 shadow-lg"
              >
-               <CheckCircle2 size={18} />
-               <span className="hidden sm:inline">已掌握</span>
-               <span className="sm:hidden">Next</span>
+               <CheckCircle2 size={20} />
+               <span>已掌握</span>
              </button>
            </div>
 
             <button 
               onClick={nextCard}
               disabled={!hasNext}
-              className="w-12 h-12 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center disabled:opacity-30 hover:bg-slate-200 active:scale-95 transition-all"
+              className="w-16 h-16 bg-white border border-slate-200 text-slate-400 rounded-[24px] flex items-center justify-center disabled:opacity-20 hover:bg-slate-50 active:scale-90 transition-all shadow-sm"
             >
-              <ChevronRight size={24} />
+              <ChevronRight size={32} strokeWidth={3} />
             </button>
         </div>
       </div>
     );
   }
 
-  // --- LIST VIEW (Minimalist) ---
   return (
-    <div className="space-y-6">
-      <header className="flex justify-between items-end mb-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">词汇表</h1>
-          <p className="text-slate-500 mt-1">从 A1 到 C1 的必修词库</p>
+    <div className="space-y-10">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">核心词汇库</h1>
+          <p className="text-slate-500 font-bold">精选必背词汇 (A1-C1)</p>
         </div>
-        <div className="hidden md:flex items-center gap-2 text-brand-600 font-bold bg-brand-50 px-3 py-1 rounded-full border border-brand-100">
-          <Book size={16} />
-          {filteredWords.length} 词
+        <div className="bg-white px-5 py-2.5 rounded-full border border-slate-100 shadow-sm flex items-center gap-2 text-brand-600 font-black">
+          <Book size={18} />
+          {filteredWords.length} 单词
         </div>
       </header>
 
-      {/* Level Selector */}
-      <div className="flex overflow-x-auto gap-3 pb-4 no-scrollbar">
+      <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
         {LEVELS.map(lvl => (
           <button
             key={lvl}
             onClick={() => setSelectedLevel(lvl)}
             className={clsx(
-              "px-6 py-2 rounded-full font-bold transition-all whitespace-nowrap border relative",
+              "px-8 py-3 rounded-full font-black transition-all whitespace-nowrap border-2",
               selectedLevel === lvl 
-                ? "bg-slate-900 text-white border-slate-900 shadow-md" 
-                : "bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                ? "bg-slate-900 text-white border-slate-900 shadow-xl" 
+                : "bg-white text-slate-400 border-slate-100 hover:border-brand-200"
             )}
           >
             {lvl}
@@ -221,44 +179,29 @@ export default function Vocabulary() {
         ))}
       </div>
 
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {filteredWords.map((word, index) => {
           const isFav = progress.favorites.includes(word.id);
-          
           return (
             <div 
               key={word.id} 
               onClick={() => enterFlashCard(index)}
-              className="group flex items-center justify-between p-4 bg-white border-b border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors"
+              className="bg-white p-6 rounded-[28px] border border-slate-100 hover:border-brand-400 hover:shadow-xl cursor-pointer transition-all flex items-center justify-between group"
             >
-              <div className="flex items-center gap-3 sm:gap-4 flex-1">
-                 <div className="w-6 flex justify-center flex-shrink-0">
-                    {isFav ? <Star size={16} className="text-amber-400 fill-amber-400" /> : <span className="text-slate-300 text-xs">●</span>}
-                 </div>
-                 
-                 <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4 flex-1 min-w-0">
-                   <div className="flex items-center gap-2">
-                     <span className="font-bold text-slate-900 text-lg truncate">{word.fr}</span>
-                     <TTSButton text={word.fr} size="sm" className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" />
-                   </div>
-                   <span className="text-slate-400 text-sm font-mono truncate">{word.ipa}</span>
-                 </div>
+              <div className="flex items-center gap-5 overflow-hidden">
+                <div className={clsx(
+                  "w-3 h-3 rounded-full shrink-0 shadow-sm",
+                  isFav ? "bg-[#E53935]" : "bg-slate-200"
+                )} />
+                <div className="overflow-hidden">
+                  <p className="font-black text-2xl text-slate-900 truncate group-hover:text-brand-600">{word.fr}</p>
+                  <p className="text-slate-400 font-bold text-sm truncate">{word.cn}</p>
+                </div>
               </div>
-              
-              <div className="flex items-center gap-4 flex-shrink-0 ml-2">
-                <span className="text-slate-500 text-sm text-right hidden sm:block max-w-[150px] truncate">{word.cn}</span>
-                <ChevronRight className="text-slate-200 group-hover:text-brand-500 transition-colors" size={18} />
-              </div>
+              <ChevronRight className="text-slate-200 group-hover:text-brand-500 transition-colors shrink-0" size={24} />
             </div>
           );
         })}
-        
-        {filteredWords.length === 0 && (
-          <div className="text-center py-20 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-slate-400 flex flex-col items-center">
-            <Sparkles size={48} className="mb-4 text-slate-300" />
-            <p>正在加载该级别词汇...</p>
-          </div>
-        )}
       </div>
     </div>
   );

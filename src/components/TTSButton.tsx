@@ -1,50 +1,57 @@
+
 import React, { useState } from 'react';
 import { Volume2 } from 'lucide-react';
-import { speakFrench } from '../lib/tts';
+import { speakFrench, tts } from '../lib/tts';
 import { clsx } from 'clsx';
 
 interface TTSButtonProps {
   text: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-  variant?: 'ghost' | 'primary';
+  label?: string;
 }
 
-export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', className, variant = 'ghost' }) => {
+export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', className, label }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handlePlay = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation(); 
-    
-    if (isPlaying) return;
     
     setIsPlaying(true);
     await speakFrench(text);
     
-    setTimeout(() => {
-      setIsPlaying(false);
-    }, Math.min(text.length * 100, 3000)); 
+    // We don't have a reliable per-utterance callback in simple speakFrench, 
+    // so we simulate the active state or just stop it if it's already playing elsewhere.
+    setTimeout(() => setIsPlaying(false), 2000);
   };
 
   const iconSizes = {
-    sm: 16,
-    md: 20,
-    lg: 24
+    sm: 18,
+    md: 22,
+    lg: 26
   };
 
-  const baseStyles = "rounded-full transition-all flex items-center justify-center cursor-pointer shadow-sm";
-  const variants = {
-    ghost: "text-brand-600 bg-brand-50 border border-brand-100 hover:bg-brand-100 hover:text-brand-800 active:scale-90",
-    primary: "bg-brand-600 text-white border border-brand-700 hover:bg-brand-700 shadow-md p-2 active:scale-90"
+  const heights = {
+    sm: 'h-11 px-4',
+    md: 'h-12 px-6',
+    lg: 'h-14 px-8'
   };
 
   return (
     <button 
       onClick={handlePlay} 
-      className={clsx(baseStyles, variants[variant], className, isPlaying && "animate-pulse ring-2 ring-brand-300")}
+      className={clsx(
+        "flex items-center justify-center gap-2 font-bold text-white transition-all active:scale-95 shadow-md",
+        "bg-[#7ED957] hover:bg-[#6ec948] rounded-[24px]",
+        heights[size],
+        isPlaying && "ring-4 ring-[#7ED957]/30",
+        className
+      )}
       aria-label="Play pronunciation"
     >
-      <Volume2 size={iconSizes[size]} />
+      <Volume2 size={iconSizes[size]} fill="white" />
+      {label && <span className="text-sm">{label}</span>}
     </button>
   );
 };
