@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { expressionData } from '../data/mockData';
 import { TTSButton } from '../components/TTSButton';
@@ -39,7 +40,8 @@ export default function Expressions() {
           <ArrowLeft size={20} className="mr-2" /> 返回场景列表
         </button>
 
-        <header className="bg-white/95 p-6 rounded-3xl border border-slate-100 shadow-lg sticky top-0 md:top-4 z-40 backdrop-blur-md transition-all">
+        {/* 修复：Sticky 头部，确保 z-index 正确 */}
+        <header className="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg sticky top-[72px] md:top-4 z-40 transition-all">
           <div className="flex items-center gap-4 mb-4">
             <div className={`w-12 h-12 rounded-2xl ${config.color} flex items-center justify-center text-2xl shadow-sm`}>
               {config.emoji}
@@ -48,7 +50,7 @@ export default function Expressions() {
               <h1 className="text-xl md:text-2xl font-bold text-slate-900">{activeCategory}</h1>
               <div className="flex items-center gap-2 text-xs md:text-sm font-medium text-slate-500 mt-1">
                  <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">{sentences.length} 句表达</span>
-                 <span className="hidden sm:inline">· 向上滑动查看更多</span>
+                 <span className="hidden sm:inline">· 点击句子即可听音</span>
               </div>
             </div>
           </div>
@@ -85,7 +87,7 @@ export default function Expressions() {
                   </div>
                   <div className="flex-1 space-y-1">
                      <h3 className={clsx("text-lg font-bold leading-snug", isActive ? "text-brand-700" : "text-slate-800")}>{expr.fr}</h3>
-                     {expr.ipa && <p className="text-sm font-mono text-slate-400 bg-slate-50 px-1.5 rounded inline-block">{expr.ipa}</p>}
+                     <p className="text-sm font-mono text-slate-400 bg-slate-50 px-1.5 rounded inline-block">{expr.ipa}</p>
                      <p className={clsx("text-base pt-1", isActive ? "text-slate-700" : "text-slate-500")}>{expr.cn}</p>
                   </div>
                   <div className={clsx(
@@ -110,7 +112,7 @@ export default function Expressions() {
         <p className="text-slate-600 mt-1">300句地道口语，覆盖核心生活场景</p>
       </header>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {categories.map(cat => {
+        {categories.map((cat: string) => {
           const config = CATEGORY_CONFIG[cat] || CATEGORY_CONFIG['默认'];
           const count = expressionData.filter(e => e.category === cat).length;
           return (

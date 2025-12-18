@@ -28,7 +28,7 @@ export interface GrammarItem {
   title: string;
   description: string;
   content: string;
-  examples: { fr: string; cn: string }[];
+  examples: { fr: string; cn: string; ipa?: string }[];
   tips?: string;
 }
 
