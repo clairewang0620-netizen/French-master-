@@ -1,99 +1,170 @@
-
-import React, { useState } from 'react';
-import { readingData } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { readingData } from '../data/readingData';
 import { TTSButton } from '../components/TTSButton';
-import { speakFrench } from '../lib/tts';
-import { ArrowLeft, BookOpen, Clock, Languages, Headphones, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Languages, Headphones, ChevronRight, Play, Square, Sparkles } from 'lucide-react';
+import { CEFRLevel } from '../types';
 import clsx from 'clsx';
 
 export default function Reading() {
   const [activeArticleId, setActiveArticleId] = useState<string | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<CEFRLevel | 'All'>('All');
   const [showTranslation, setShowTranslation] = useState(false);
-
+  const [isPlayingFull, setIsPlayingFull] = useState(false);
+  const [currentParaIdx, setCurrentParaIdx] = useState<number | null>(null);
+  
   const activeArticle = readingData.find(r => r.id === activeArticleId);
 
+  // Level mapping for the list view
+  const filteredArticles = readingData.filter(art => 
+    selectedLevel === 'All' ? true : art.level === selectedLevel
+  );
+
+  // Audio sequencing logic for full article playback
+  const playParagraph = (paragraphs: string[], index: number) => {
+    if (index >= paragraphs.length || !isPlayingFull) {
+      setIsPlayingFull(false);
+      setCurrentParaIdx(null);
+      return;
+    }
+
+    setCurrentParaIdx(index);
+    const utterance = new SpeechSynthesisUtterance(paragraphs[index]);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.85;
+
+    utterance.onend = () => {
+      // Check state again because it might have been canceled during playback
+      if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+         // This is a browser quirk fix
+      }
+      playParagraph(paragraphs, index + 1);
+    };
+
+    utterance.onerror = () => {
+      setIsPlayingFull(false);
+      setCurrentParaIdx(null);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handleToggleFullAudio = () => {
+    if (isPlayingFull) {
+      window.speechSynthesis.cancel();
+      setIsPlayingFull(false);
+      setCurrentParaIdx(null);
+    } else if (activeArticle) {
+      const paragraphs = activeArticle.content_fr.split('\n\n');
+      setIsPlayingFull(true);
+      playParagraph(paragraphs, 0);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  // --- ARTICLE DETAIL VIEW ---
   if (activeArticle) {
+    const paragraphs_fr = activeArticle.content_fr.split('\n\n');
+    const paragraphs_zh = activeArticle.content_zh.split('\n\n');
+
     return (
       <div className="space-y-6 pb-20 animate-in fade-in duration-500 max-w-4xl mx-auto">
         <button 
-          onClick={() => { setActiveArticleId(null); setShowTranslation(false); }} 
+          onClick={() => { 
+            window.speechSynthesis.cancel();
+            setActiveArticleId(null); 
+            setShowTranslation(false); 
+            setIsPlayingFull(false);
+            setCurrentParaIdx(null);
+          }} 
           className="flex items-center text-slate-500 hover:text-brand-600 font-medium transition-colors"
         >
           <ArrowLeft size={20} className="mr-2" /> 返回文章列表
         </button>
 
-        <article className="bg-white rounded-[2rem] p-6 md:p-12 shadow-2xl border border-slate-100 overflow-hidden">
+        <article className="bg-white rounded-[2.5rem] p-6 md:p-12 shadow-2xl border border-slate-100 overflow-hidden">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-slate-50 pb-8">
             <div className="space-y-3 flex-1">
                <span className="px-3 py-1 bg-brand-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm">
                 Niveau {activeArticle.level}
               </span>
-              <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight">{activeArticle.title}</h1>
+              <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">{activeArticle.title}</h1>
             </div>
             
             <button 
-              onClick={() => speakFrench(activeArticle.content_fr)}
-              className="flex items-center justify-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-brand-600 shadow-xl transition-all active:scale-95"
+              onClick={handleToggleFullAudio}
+              className={clsx(
+                "flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-bold shadow-xl transition-all active:scale-95 whitespace-nowrap",
+                isPlayingFull ? "bg-red-500 text-white hover:bg-red-600" : "bg-slate-900 text-white hover:bg-brand-600"
+              )}
             >
-              <Headphones size={22} />
-              全文朗读 (fr-FR)
+              {isPlayingFull ? <Square size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
+              {isPlayingFull ? "停止播放" : "全文朗读"}
             </button>
           </div>
 
           <div className="space-y-12">
-            {/* French Text */}
-            <section className="space-y-4">
-              <div className="flex items-center gap-2 text-brand-600">
-                 <div className="w-1.5 h-6 bg-brand-500 rounded-full"></div>
-                 <h2 className="font-black text-lg uppercase tracking-wider">Texte Original</h2>
+            {/* French Text Content */}
+            <section className="space-y-6">
+              <div className="flex items-center gap-2 text-brand-600 border-b border-brand-100 pb-2 w-fit">
+                 <h2 className="font-black text-xs md:text-sm uppercase tracking-[0.2em]">Texte Original</h2>
               </div>
-              <div className="text-xl md:text-2xl leading-[2.2] text-slate-800 font-medium bg-slate-50/50 p-6 md:p-10 rounded-3xl border border-slate-100 shadow-inner select-text whitespace-pre-wrap">
-                {activeArticle.content_fr}
-              </div>
-            </section>
-
-            {/* Translation (Foldable) */}
-            <section className="space-y-4">
-              <button 
-                onClick={() => setShowTranslation(!showTranslation)}
-                className={clsx(
-                  "w-full flex items-center justify-between p-6 rounded-2xl border font-bold transition-all",
-                  showTranslation ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-white border-slate-200 text-slate-600 hover:border-emerald-300 shadow-sm"
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <Languages size={24} className={showTranslation ? "text-emerald-500" : "text-slate-400"} />
-                  显示/隐藏中文翻译
-                </div>
-                {showTranslation ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-              </button>
-
-              {showTranslation && (
-                <div className="text-lg md:text-xl leading-[2] text-slate-600 bg-emerald-50/20 p-8 rounded-3xl border border-emerald-100 italic animate-in slide-in-from-top-2 duration-300">
-                  {activeArticle.content_zh}
-                </div>
-              )}
-            </section>
-
-            {/* Keywords */}
-            <section className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-              <h3 className="font-black text-slate-900 mb-6 text-xl flex items-center gap-3">
-                <BookOpen size={24} className="text-accent-500" /> 
-                核心词汇 / Vocabulaire Clé
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {activeArticle.keywords.map((kw, i) => (
-                  <div key={i} className="flex flex-col p-5 bg-white border border-slate-200 rounded-2xl hover:border-brand-300 transition-all shadow-sm group">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-bold text-brand-900 text-lg">{kw.fr}</span>
-                      <TTSButton text={kw.fr} size="sm" variant="ghost" />
+              
+              <div className="space-y-8">
+                {paragraphs_fr.map((para, idx) => (
+                  <div key={idx} className="relative">
+                    <div className={clsx(
+                      "text-xl md:text-2xl leading-[2] text-slate-800 font-medium transition-all duration-500 rounded-2xl p-4 -mx-4",
+                      currentParaIdx === idx ? "bg-brand-50 text-brand-900 shadow-sm scale-[1.01]" : "bg-transparent"
+                    )}>
+                      {para}
                     </div>
-                    {kw.ipa && <span className="text-[10px] font-mono text-slate-400 mb-1">{kw.ipa}</span>}
-                    <span className="text-slate-500 text-sm font-medium">{kw.zh}</span>
+                    {showTranslation && (
+                      <div className="mt-4 p-4 rounded-xl bg-slate-50 border-l-4 border-slate-200 text-slate-500 italic animate-in fade-in slide-in-from-left-2 duration-500">
+                        {paragraphs_zh[idx]}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
+            </section>
+
+            {/* Controls */}
+            <div className="flex flex-wrap gap-4 pt-4">
+              <button 
+                onClick={() => setShowTranslation(!showTranslation)}
+                className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all"
+              >
+                <Languages size={20} />
+                {showTranslation ? "隐藏翻译" : "显示翻译"}
+              </button>
+            </div>
+
+            {/* Keywords */}
+            <section className="bg-slate-50 rounded-[2rem] p-8 space-y-6">
+               <div className="flex items-center gap-2 text-slate-400">
+                 <Sparkles size={20} />
+                 <h3 className="font-black text-xs uppercase tracking-widest">Mots clés (重点词汇)</h3>
+               </div>
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 {activeArticle.keywords.map((kw, i) => (
+                   <div key={i} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group">
+                     <div className="flex items-center gap-3">
+                       <TTSButton text={kw.fr} size="sm" />
+                       <div>
+                         <p className="font-bold text-slate-900">{kw.fr}</p>
+                         <p className="text-[10px] text-slate-400 font-mono">{kw.ipa}</p>
+                       </div>
+                     </div>
+                     <span className="text-sm text-brand-600 font-bold">{kw.zh}</span>
+                   </div>
+                 ))}
+               </div>
             </section>
           </div>
         </article>
@@ -101,49 +172,98 @@ export default function Reading() {
     );
   }
 
+  // --- LIST VIEW ---
   return (
-    <div className="space-y-10">
-      <header className="max-w-2xl">
-        <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-3">精选阅读 (Lecture)</h1>
-        <p className="text-lg text-slate-500 font-medium">通过 20 篇高品质文章建立法语语感与逻辑思考。</p>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">精选阅读 (Lecture)</h1>
+          <p className="text-slate-500 font-medium mt-1">分级精品美文，地道表达与朗读伴读。</p>
+        </div>
+        <div className="bg-white px-4 py-2 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-2 text-brand-600 font-black">
+          <BookOpen size={20} />
+          {readingData.length} 篇
+        </div>
       </header>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {readingData.map(article => (
-          <div 
-            key={article.id} 
-            onClick={() => { setActiveArticleId(article.id); window.scrollTo(0,0); }}
-            className="group bg-white p-8 rounded-[2rem] border border-slate-200 hover:border-brand-400 hover:shadow-xl cursor-pointer transition-all flex flex-col h-full relative"
+      {/* Level Filter */}
+      <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+        {['All', 'A1', 'A2', 'B1', 'B2', 'C1'].map((lvl) => (
+          <button
+            key={lvl}
+            onClick={() => setSelectedLevel(lvl as any)}
+            className={clsx(
+              "px-6 py-2 rounded-full font-black transition-all border-2",
+              selectedLevel === lvl 
+                ? "bg-slate-900 border-slate-900 text-white shadow-lg" 
+                : "bg-white border-slate-100 text-slate-400 hover:border-brand-200"
+            )}
           >
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-2">
-                <span className="px-3 py-1 bg-slate-900 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter">
-                  {article.level}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                  <Clock size={12} /> 约 500 词
-                </span>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center group-hover:bg-brand-500 group-hover:text-white transition-all">
-                <ChevronRight size={18} />
-              </div>
-            </div>
-            
-            <h3 className="text-2xl font-black text-slate-800 mb-3 group-hover:text-brand-600 transition-colors leading-tight">
-              {article.title}
-            </h3>
-            
-            <p className="text-slate-400 line-clamp-2 mb-6 flex-1 text-sm font-medium">
-              {article.content_fr.substring(0, 100)}...
-            </p>
-            
-            <div className="flex items-center gap-4 text-xs font-bold text-slate-400">
-               <span className="flex items-center gap-1"><Headphones size={14} className="text-brand-300"/> 全文朗读</span>
-               <span className="flex items-center gap-1"><Languages size={14} className="text-emerald-300"/> 双语切换</span>
-            </div>
-          </div>
+            {lvl === 'All' ? '全部级别' : lvl}
+          </button>
         ))}
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {filteredArticles.map((art) => (
+          <button
+            key={art.id}
+            onClick={() => setActiveArticleId(art.id)}
+            className="group bg-white p-8 rounded-[2rem] border border-slate-100 hover:border-brand-500 hover:shadow-2xl transition-all text-left relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+              <BookOpen size={120} />
+            </div>
+            
+            <div className="relative z-10 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className={clsx(
+                  "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest",
+                  art.level === 'A1' && "bg-blue-100 text-blue-600",
+                  art.level === 'A2' && "bg-green-100 text-green-600",
+                  art.level === 'B1' && "bg-yellow-100 text-yellow-600",
+                  art.level === 'B2' && "bg-orange-100 text-orange-600",
+                  art.level === 'C1' && "bg-red-100 text-red-600"
+                )}>
+                  Niveau {art.level}
+                </span>
+                {art.audio && (
+                  <div className="flex items-center gap-1.5 text-slate-300 group-hover:text-brand-500 transition-colors">
+                    <Headphones size={16} />
+                    <span className="text-[10px] font-black uppercase">Audio</span>
+                  </div>
+                )}
+              </div>
+              
+              <h3 className="text-2xl font-black text-slate-800 leading-tight group-hover:text-brand-600 transition-colors">
+                {art.title}
+              </h3>
+              
+              <div className="flex items-center gap-4 text-slate-400 text-xs font-bold">
+                 <div className="flex items-center gap-1">
+                   <Clock size={14} />
+                   <span>~{Math.ceil(art.content_fr.length / 50)} min</span>
+                 </div>
+                 <div className="flex items-center gap-1">
+                   <Languages size={14} />
+                   <span>Traduit</span>
+                 </div>
+              </div>
+
+              <div className="pt-4 flex items-center gap-2 text-brand-600 font-black text-sm opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                开始阅读 <ChevronRight size={18} />
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {filteredArticles.length === 0 && (
+        <div className="text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-slate-100 flex flex-col items-center">
+           <BookOpen size={64} className="text-slate-100 mb-4" />
+           <p className="text-slate-400 font-bold">该级别文章正在编写中，请先探索其他级别。</p>
+        </div>
+      )}
     </div>
   );
 }
