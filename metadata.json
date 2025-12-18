@@ -1,0 +1,5 @@
+{
+  "name": "Lumière French",
+  "description": "A premium, full-featured French learning application designed for Cloudflare Pages. Features offline-capable architecture, Web Speech API integration, and comprehensive study modules including Vocabulary, Grammar, Reading, and Exams.",
+  "requestFramePermissions": []
+}
