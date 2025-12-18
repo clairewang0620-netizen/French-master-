@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { readingData } from '../data/readingData';
 import { TTSButton } from '../components/TTSButton';
-import { ArrowLeft, BookOpen, Clock, Languages, Headphones, ChevronRight, Play, Square, Sparkles } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Languages, Headphones, ChevronRight, Volume2, Square, Sparkles } from 'lucide-react';
 import { CEFRLevel } from '../types';
 import clsx from 'clsx';
 
@@ -10,59 +10,94 @@ export default function Reading() {
   const [selectedLevel, setSelectedLevel] = useState<CEFRLevel | 'All'>('All');
   const [showTranslation, setShowTranslation] = useState(false);
   const [isPlayingFull, setIsPlayingFull] = useState(false);
-  const [currentParaIdx, setCurrentParaIdx] = useState<number | null>(null);
+  
+  // Ref to track if playback should continue (to stop immediately on user cancel)
+  const isPlayingRef = useRef(false);
   
   const activeArticle = readingData.find(r => r.id === activeArticleId);
 
-  // Level mapping for the list view
   const filteredArticles = readingData.filter(art => 
     selectedLevel === 'All' ? true : art.level === selectedLevel
   );
 
-  // Audio sequencing logic for full article playback
-  const playParagraph = (paragraphs: string[], index: number) => {
-    if (index >= paragraphs.length || !isPlayingFull) {
+  /**
+   * CROSS-PLATFORM AUDIO QUEUE SYSTEM:
+   * 1. Splits text into small chunks (< 160 chars) at sentence boundaries.
+   * 2. Uses sequential onend triggers to avoid buffer overflow on iOS/Android.
+   * 3. Forces fr-FR locale and specific French voice selection.
+   */
+  const handleToggleFullAudio = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (isPlayingFull) {
+      window.speechSynthesis.cancel();
+      isPlayingRef.current = false;
       setIsPlayingFull(false);
-      setCurrentParaIdx(null);
       return;
     }
 
-    setCurrentParaIdx(index);
-    const utterance = new SpeechSynthesisUtterance(paragraphs[index]);
-    utterance.lang = 'fr-FR';
-    utterance.rate = 0.85;
+    if (!activeArticle) return;
 
-    utterance.onend = () => {
-      // Check state again because it might have been canceled during playback
-      if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
-         // This is a browser quirk fix
+    window.speechSynthesis.cancel();
+    isPlayingRef.current = true;
+    setIsPlayingFull(true);
+
+    // 1. Prepare Text: Split by sentence delimiters and ensure chunks are small
+    const rawText = activeArticle.content_fr;
+    const sentences = rawText.match(/[^.!?]+[.!?]+/g) || [rawText];
+    
+    // Sub-chunking if any sentence exceeds character limits (for mobile stability)
+    const chunks: string[] = [];
+    sentences.forEach(s => {
+      const text = s.trim();
+      if (text.length > 160) {
+        const parts = text.match(/.{1,160}(\s|$)/g) || [text];
+        parts.forEach(p => chunks.push(p.trim()));
+      } else {
+        chunks.push(text);
       }
-      playParagraph(paragraphs, index + 1);
+    });
+
+    let currentChunkIdx = 0;
+
+    const speakNextChunk = () => {
+      if (!isPlayingRef.current || currentChunkIdx >= chunks.length) {
+        setIsPlayingFull(false);
+        isPlayingRef.current = false;
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(chunks[currentChunkIdx]);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      // Ensure French voice is selected
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(v => v.lang.startsWith('fr')) || null;
+      if (preferredVoice) utterance.voice = preferredVoice;
+
+      utterance.onend = () => {
+        currentChunkIdx++;
+        speakNextChunk();
+      };
+
+      utterance.onerror = () => {
+        setIsPlayingFull(false);
+        isPlayingRef.current = false;
+      };
+
+      window.speechSynthesis.speak(utterance);
     };
 
-    utterance.onerror = () => {
-      setIsPlayingFull(false);
-      setCurrentParaIdx(null);
-    };
-
-    window.speechSynthesis.speak(utterance);
-  };
-
-  const handleToggleFullAudio = () => {
-    if (isPlayingFull) {
-      window.speechSynthesis.cancel();
-      setIsPlayingFull(false);
-      setCurrentParaIdx(null);
-    } else if (activeArticle) {
-      const paragraphs = activeArticle.content_fr.split('\n\n');
-      setIsPlayingFull(true);
-      playParagraph(paragraphs, 0);
-    }
+    // Begin sequence
+    speakNextChunk();
   };
 
   useEffect(() => {
     return () => {
       window.speechSynthesis.cancel();
+      isPlayingRef.current = false;
     };
   }, []);
 
@@ -76,10 +111,10 @@ export default function Reading() {
         <button 
           onClick={() => { 
             window.speechSynthesis.cancel();
+            isPlayingRef.current = false;
             setActiveArticleId(null); 
             setShowTranslation(false); 
             setIsPlayingFull(false);
-            setCurrentParaIdx(null);
           }} 
           className="flex items-center text-slate-500 hover:text-brand-600 font-medium transition-colors"
         >
@@ -88,7 +123,7 @@ export default function Reading() {
 
         <article className="bg-white rounded-[2.5rem] p-6 md:p-12 shadow-2xl border border-slate-100 overflow-hidden">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-slate-50 pb-8">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-12 border-b border-slate-50 pb-8">
             <div className="space-y-3 flex-1">
                <span className="px-3 py-1 bg-brand-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm">
                 Niveau {activeArticle.level}
@@ -96,15 +131,27 @@ export default function Reading() {
               <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">{activeArticle.title}</h1>
             </div>
             
+            {/* MANDATORY GREEN PRONUNCIATION BUTTON */}
             <button 
               onClick={handleToggleFullAudio}
               className={clsx(
-                "flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-bold shadow-xl transition-all active:scale-95 whitespace-nowrap",
-                isPlayingFull ? "bg-red-500 text-white hover:bg-red-600" : "bg-slate-900 text-white hover:bg-brand-600"
+                "flex items-center justify-center gap-3 px-8 py-5 rounded-2xl font-black shadow-xl transition-all active:scale-95 whitespace-nowrap",
+                isPlayingFull 
+                  ? "bg-red-500 text-white hover:bg-red-600 shadow-red-100" 
+                  : "bg-[#16a34a] text-white hover:bg-[#15803d] shadow-green-100"
               )}
             >
-              {isPlayingFull ? <Square size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
-              {isPlayingFull ? "停止播放" : "全文朗读"}
+              {isPlayingFull ? (
+                <>
+                  <Square size={24} fill="currentColor" />
+                  <span>停止播放</span>
+                </>
+              ) : (
+                <>
+                  <Volume2 size={24} />
+                  <span>🔊 法语朗读</span>
+                </>
+              )}
             </button>
           </div>
 
@@ -118,14 +165,11 @@ export default function Reading() {
               <div className="space-y-8">
                 {paragraphs_fr.map((para, idx) => (
                   <div key={idx} className="relative">
-                    <div className={clsx(
-                      "text-xl md:text-2xl leading-[2] text-slate-800 font-medium transition-all duration-500 rounded-2xl p-4 -mx-4",
-                      currentParaIdx === idx ? "bg-brand-50 text-brand-900 shadow-sm scale-[1.01]" : "bg-transparent"
-                    )}>
+                    <div className="text-xl md:text-2xl leading-[2.2] text-slate-800 font-medium rounded-2xl">
                       {para}
                     </div>
                     {showTranslation && (
-                      <div className="mt-4 p-4 rounded-xl bg-slate-50 border-l-4 border-slate-200 text-slate-500 italic animate-in fade-in slide-in-from-left-2 duration-500">
+                      <div className="mt-4 p-5 rounded-2xl bg-slate-50 border-l-4 border-slate-200 text-slate-500 italic animate-in fade-in slide-in-from-left-2 duration-500 text-lg leading-relaxed">
                         {paragraphs_zh[idx]}
                       </div>
                     )}
@@ -135,7 +179,7 @@ export default function Reading() {
             </section>
 
             {/* Controls */}
-            <div className="flex flex-wrap gap-4 pt-4">
+            <div className="flex flex-wrap gap-4 pt-4 border-t border-slate-50">
               <button 
                 onClick={() => setShowTranslation(!showTranslation)}
                 className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all"
@@ -153,7 +197,7 @@ export default function Reading() {
                </div>
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  {activeArticle.keywords.map((kw, i) => (
-                   <div key={i} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group">
+                   <div key={i} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group">
                      <div className="flex items-center gap-3">
                        <TTSButton text={kw.fr} size="sm" />
                        <div>
@@ -180,9 +224,9 @@ export default function Reading() {
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">精选阅读 (Lecture)</h1>
           <p className="text-slate-500 font-medium mt-1">分级精品美文，地道表达与朗读伴读。</p>
         </div>
-        <div className="bg-white px-4 py-2 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-2 text-brand-600 font-black">
+        <div className="bg-white px-5 py-2.5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-2 text-brand-600 font-black">
           <BookOpen size={20} />
-          {readingData.length} 篇
+          {readingData.length} 篇美文
         </div>
       </header>
 
@@ -193,7 +237,7 @@ export default function Reading() {
             key={lvl}
             onClick={() => setSelectedLevel(lvl as any)}
             className={clsx(
-              "px-6 py-2 rounded-full font-black transition-all border-2",
+              "px-6 py-2.5 rounded-full font-black transition-all border-2",
               selectedLevel === lvl 
                 ? "bg-slate-900 border-slate-900 text-white shadow-lg" 
                 : "bg-white border-slate-100 text-slate-400 hover:border-brand-200"
@@ -228,9 +272,9 @@ export default function Reading() {
                   Niveau {art.level}
                 </span>
                 {art.audio && (
-                  <div className="flex items-center gap-1.5 text-slate-300 group-hover:text-brand-500 transition-colors">
-                    <Headphones size={16} />
-                    <span className="text-[10px] font-black uppercase">Audio</span>
+                  <div className="flex items-center gap-1.5 text-brand-500 font-black uppercase tracking-tighter">
+                    <Volume2 size={18} />
+                    <span className="text-[10px]">Audio Ready</span>
                   </div>
                 )}
               </div>
@@ -239,7 +283,11 @@ export default function Reading() {
                 {art.title}
               </h3>
               
-              <div className="flex items-center gap-4 text-slate-400 text-xs font-bold">
+              <p className="text-slate-500 line-clamp-2 text-sm leading-relaxed">
+                {art.content_fr.slice(0, 120)}...
+              </p>
+              
+              <div className="flex items-center gap-4 text-slate-400 text-xs font-bold pt-2">
                  <div className="flex items-center gap-1">
                    <Clock size={14} />
                    <span>~{Math.ceil(art.content_fr.length / 50)} min</span>
@@ -251,7 +299,7 @@ export default function Reading() {
               </div>
 
               <div className="pt-4 flex items-center gap-2 text-brand-600 font-black text-sm opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                开始阅读 <ChevronRight size={18} />
+                进入阅读模式 <ChevronRight size={18} />
               </div>
             </div>
           </button>
@@ -261,7 +309,7 @@ export default function Reading() {
       {filteredArticles.length === 0 && (
         <div className="text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-slate-100 flex flex-col items-center">
            <BookOpen size={64} className="text-slate-100 mb-4" />
-           <p className="text-slate-400 font-bold">该级别文章正在编写中，请先探索其他级别。</p>
+           <p className="text-slate-400 font-bold">该级别文章正在编写中...</p>
         </div>
       )}
     </div>
