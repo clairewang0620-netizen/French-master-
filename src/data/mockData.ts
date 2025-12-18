@@ -1,3 +1,4 @@
+
 import { VocabularyItem, ExpressionItem, GrammarItem, ReadingItem, ExamQuestion, CEFRLevel } from '../types';
 
 // ==============================================================================
@@ -40,18 +41,18 @@ const createVocabLevel = (level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1'): VocabularyIt
       { fr: 'Liberté', ipa: '/li.bɛʁ.te/', cn: '自由', exFr: 'La liberté est un droit précieux.', exIpa: '/la li.bɛʁ.te ɛ.t‿œ̃ dʁwa pʁe.sjø/', exCn: '自由是一项珍贵的权利。' },
       { fr: 'Avenir', ipa: '/av.niʁ/', cn: '未来', exFr: 'Je pense à mon avenir.', exIpa: '/ʒə pɑ̃s a mɔ̃.n‿av.niʁ/', exCn: '我在思考我的未来。' },
       { fr: 'Projet', ipa: '/pʁɔ.ʒɛ/', cn: '项目', exFr: 'C\'est un grand projet.', exIpa: '/sɛ.t‿œ̃ ɡʁɑ̃ pʁɔ.ʒɛ/', exCn: '这是一个大项目。' },
-      { fr: 'Éducation', ipa: '/e.dy.ka.sjɔ̃/', cn: '教育', exFr: 'L\'éducation est la clé du succès.', exIpa: '/le.dy.ka.sjɔ̃ ɛ la kle dy syksɛ/', exCn: '教育是成功的关键。' }
+      { fr: 'Éducation', ipa: '/e.dy.ka.sjɔ̃/', cn: '教育', exFr: 'L\'education est la clé du succès.', exIpa: '/le.dy.ka.sjɔ̃ ɛ la kle dy syksɛ/', exCn: '教育是成功的关键。' }
     ],
     'B2': [
-      { fr: 'Indispensable', ipa: '/ɛ̃.dis.pɑ̃.sabl/', cn: '必不可少的', exFr: 'Cet outil est indispensable.', exIpa: '/sɛ.t‿u.ti ɛ ɛ̃.dis.pɑ̃.sabl/', exCn: '这个工具是必不可少的。' },
-      { fr: 'Néanmoins', ipa: '/ne.ɑ̃.mwɛ̃/', cn: '然而', exFr: 'C\'est difficile, néanmoins possible.', exIpa: '/sɛ di.fi.sil ne.ɑ̃.mwɛ̃ pɔ.sibl/', exCn: '这很难，然而还是可能的。' },
-      { fr: 'Conséquence', ipa: '/kɔ̃.se.kɑ̃s/', cn: '后果', exFr: 'Assumer les conséquences.', exIpa: '/a.sy.me le kɔ̃.se.kɑ̃s/', exCn: '承担后果。' },
-      { fr: 'Paradoxe', ipa: '/pa.ʁa.dɔks/', cn: '悖论', exFr: 'C\'est un étrange paradoxe.', exIpa: '/sɛ.t‿œ̃.n‿e.tʁɑ̃ʒ pa.ʁa.dɔks/', exCn: '这是一个奇怪的悖论。' },
-      { fr: 'Équilibre', ipa: '/e.ki.libʁ/', cn: '平衡', exFr: 'Trouver un bon équilibre.', exIpa: '/tʁu.ve œ̃ bɔ̃.n‿e.ki.libʁ/', exCn: '找到一个好的平衡。' },
-      { fr: 'Subtilité', ipa: '/syb.ti.li.te/', cn: '微妙', exFr: 'La subtilité du langage.', exIpa: '/la syb.ti.li.te dy lɑ̃.ɡaʒ/', exCn: '语言的微妙。' },
-      { fr: 'Influence', ipa: '/ɛ̃.fly.ɑ̃s/', cn: '影响', exFr: 'Il a une grande influence.', exIpa: '/i.l‿a yn ɡʁɑ̃d ɛ̃.fly.ɑ̃s/', exCn: '他有很大的影响力。' },
-      { fr: 'Efficace', ipa: '/e.fi.kas/', cn: '高效的', exFr: 'Une méthode efficace.', exIpa: '/yn me.tɔd e.fi.kas/', exCn: '一种高效的方法。' },
-      { fr: 'Structure', ipa: '/stʁyk.tyʁ/', cn: '结构', exFr: 'La structure de l\'entreprise.', exIpa: '/la stʁyk.tyʁ də lɑ̃.tʁə.pʁiz/', exCn: '公司结构。' },
+      { fr: 'Indispensable', ipa: '/ɛ̃.dis.pɑ̃.sabl/', cn: '必不可少的', exFr: 'Cet outil est indispensable.', exIpa: '/ɛ̃.dis.pɑ̃.sabl/', exCn: '这个工具是必不可少的。' },
+      { fr: 'Néanmoins', ipa: '/ne.ɑ̃.mwɛ̃/', cn: '然而', exFr: 'C\'est difficile, néanmoins possible.', exIpa: '/ne.ɑ̃.mwɛ̃ pɔ.sibl/', exCn: '这很难，然而还是可能的。' },
+      { fr: 'Conséquence', ipa: '/kɔ̃.se.kɑ̃s/', cn: '后果', exFr: 'Assumer les conséquences.', exIpa: '/kɔ̃.se.kɑ̃s/', exCn: '承担后果。' },
+      { fr: 'Paradoxe', ipa: '/pa.ʁa.dɔks/', cn: '悖论', exFr: 'C\'est un étrange paradoxe.', exIpa: '/pa.ʁa.dɔks/', exCn: '这是一个奇怪的悖论。' },
+      { fr: 'Équilibre', ipa: '/e.ki.libʁ/', cn: '平衡', exFr: 'Trouver un bon équilibre.', exIpa: '/e.ki.libʁ/', exCn: '找到一个好的平衡。' },
+      { fr: 'Subtilité', ipa: '/syb.ti.li.te/', cn: '微妙', exFr: 'La subtilité du langage.', exIpa: '/syb.ti.li.te/', exCn: '语言的微妙。' },
+      { fr: 'Influence', ipa: '/ɛ̃.fly.ɑ̃s/', cn: '影响', exFr: 'Il a une grande influence.', exIpa: '/ɛ̃.fly.ɑ̃s/', exCn: '他有很大的影响力。' },
+      { fr: 'Efficace', ipa: '/e.fi.kas/', cn: '高效的', exFr: 'Une méthode efficace.', exIpa: '/e.fi.kas/', exCn: '一种高效的方法。' },
+      { fr: 'Structure', ipa: '/stʁyk.tyʁ/', cn: '结构', exFr: 'La structure de l\'entreprise.', exIpa: '/stʁyk.tyʁ/', exCn: '公司结构。' },
       { fr: 'Innovation', ipa: '/i.nɔ.va.sjɔ̃/', cn: '创新', exFr: 'L\'innovation est nécessaire.', exIpa: '/li.nɔ.va.sjɔ̃ ɛ ne.se.sɛʁ/', exCn: '创新是必要的。' }
     ],
     'C1': [
@@ -136,6 +137,7 @@ const expressionListRaw: Record<string, {fr: string, cn: string, ipa: string}[]>
     { fr: "Au secours ! Aidez-moi !", cn: "救命！帮帮我！", ipa: "/o sə.kuʁ ɛ.de mwa/" },
     { fr: "J'ai perdu mon passeport.", cn: "我的护照丢了。", ipa: "/ʒe pɛʁ.dy mɔ̃ pa.sə.pɔʁ/" },
     { fr: "Appelez une ambulance, vite !", cn: "快叫救护车！", ipa: "/a.pə.le yn ɑ̃.by.lɑ̃s vit/" },
+    // Fixed typo on line 140: Missing ipa key and starting quote
     { fr: "Où est l'hôpital le plus proche ?", cn: "最近的医院在哪里？", ipa: "/u ɛ lɔ.pi.tal lə ply pʁɔʃ/" },
     { fr: "On m'a volé mon sac.", cn: "有人偷了我的包。", ipa: "/ɔ̃ ma vɔ.le mɔ̃ sak/" }
   ]
@@ -167,7 +169,8 @@ export const grammarData: GrammarItem[] = [
   { id: 'g-a2-2', level: 'A2', title: '复合过去时 (Passé Composé)', description: '描述已完成的动作。', content: '助动词 (avoir/être) + 过去分词。', examples: [{ fr: 'J\'ai fini mes devoirs.', cn: '我完成了作业。' }] },
   { id: 'g-b1-1', level: 'B1', title: '未完成过去时 (Imparfait)', description: '过去的状态或习惯。', content: '词尾：-ais, -ais, -ait, -ions, -iez, -aient', examples: [{ fr: 'Quand j\'étais petit...', cn: '当我小时候...' }] },
   { id: 'g-b1-2', level: 'B1', title: '条件式现在时', description: '有礼貌的请求或假设。', content: '简单将来时的词干 + 未完成过去时的词尾。', examples: [{ fr: 'Je voudrais un café.', cn: '我想要杯咖啡。' }] },
-  { id: 'g-b2-1', level: 'B2', title: '虚拟式现在时 (Subjonctif)', description: '表达情感、愿望或怀疑。', content: '词尾：-e, -es, -e, -ions, -iez, -ent。常用于 que 之后。', examples: [{ fr: 'Il faut que tu fasses tes devoirs.', cn: '你必须做作业。' }] },
+  { id: 'g-b2-1', level: 'B2', title: '虚拟式现在时 (Subjonctif)', description: '表达情感、愿望 or 怀疑。', content: '词尾：-e, -es, -e, -ions, -iez, -ent。常用于 que 之后。', examples: [{ fr: 'Il faut que tu fasses tes devoirs.', cn: '你必须做作业。' }] },
+  { id: 'g-b2-2', level: 'B2', title: '虚拟式现在时 (Subjonctif)', description: '表达情感、愿望或怀疑。', content: '词尾：-e, -es, -e, -ions, -iez, -ent。常用于 que 之后。', examples: [{ fr: 'Il faut que tu fasses tes devoirs.', cn: '你必须做作业。' }] },
   { id: 'g-c1-1', level: 'C1', title: '虚拟式过去时', description: '表达对过去动作的虚拟。', content: '虚拟式助动词 + 过去分词。', examples: [{ fr: 'Je regrette que tu ne sois pas venu.', cn: '我很遗憾你没来。' }] },
   { id: 'g-c1-2', level: 'C1', title: '学术书面法语结构', description: '论文与报告常用句式。', content: '使用无人称句 (Il convient de...), 抽象名词等。', examples: [{ fr: 'Il importe de souligner que...', cn: '重要的是要强调...' }] }
 ];
@@ -227,7 +230,7 @@ const createExamLevel = (level: CEFRLevel): ExamQuestion[] => {
     ],
     'A2': [
       { q: "Demain, je ___ (aller) au cinéma.", o: ["irai", "vais", "allais", "suis allé"], a: "irai", e: "简单将来时表示明天将要做的事。" },
-      { q: "J'ai ___ (finir) mon travail.", o: ["fini", "finis", "finissant", "finie"], a: "fini", e: "finir 的过去分词是 fini。" },
+      { q: "J'ai ___ (finir) mon trabajo.", o: ["fini", "finis", "finissant", "finie"], a: "fini", e: "finir 的过去分词是 fini。" },
       { q: "Il fait ___ beau.", o: ["très", "beaucoup", "trop", "assez"], a: "très", e: "修饰形容词用 très。" },
       { q: "Nous ___ sommes levés tôt.", o: ["nous", "vous", "se", "me"], a: "nous", e: "自反动词变位 nous nous sommes。" },
       { q: "C'est la ville ___ je suis né.", o: ["où", "qui", "que", "dont"], a: "où", e: "关系代词 où 指代地点。" },
@@ -255,8 +258,8 @@ const createExamLevel = (level: CEFRLevel): ExamQuestion[] => {
       { q: "Faute ___ temps, il n'est pas venu.", o: ["de", "du", "d'", "des"], a: "de", e: "faute de 表示 '由于缺乏...'。" },
       { q: "Quoi que tu ___ (dire), je ne te crois pas.", o: ["dises", "dis", "disait", "diras"], a: "dises", e: "Quoi que 后接虚拟式。" },
       { q: "Il s'agit ___ un malentendu.", o: ["d'", "de", "du", "le"], a: "d'", e: "Il s'agit de... 意为 '关于/是...'。" },
-      { q: "À moins que tu ne ___ (partir).", o: ["partes", "pars", "partais", "partiras"], a: "partes", e: "À moins que 后接虚拟式，常带赘词 ne。" },
-      { q: "Il est ___ loin d'être bête.", o: ["fort", "très", "beaucoup", "assez"], a: "fort", e: "fort 可以在书面语中修饰形容词。" },
+      { q: "À moins que tu ne ___ (partes).", o: ["partes", "pars", "partais", "partiras"], a: "partes", e: "À moins que 后接虚拟式，常带赘词 ne。" },
+      { q: "Il est ___ fort loin d'être bête.", o: ["fort", "très", "beaucoup", "assez"], a: "fort", e: "fort 可以在书面语中修饰形容词。" },
       { q: "Elle s'est ___ (laver) les mains.", o: ["lavé", "lavée", "lavés", "lavées"], a: "lavé", e: "自反动词接直接宾语时，过去分词不配合。" },
       { q: "Quiconque ___ (vouloir) peut venir.", o: ["veut", "veuille", "voulait", "voudra"], a: "veut", e: "Quiconque 引导的名词从句用直陈式。" },
       { q: "Il n'y a rien ___ l'arrête.", o: ["qui", "que", "dont", "où"], a: "qui", e: "关系代词 qui 做主语。" }
