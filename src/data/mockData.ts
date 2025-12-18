@@ -13,7 +13,7 @@ export const vocabularyData: VocabularyItem[] = [
   { id: 'v-a1-5', level: 'A1', fr: 'Livre', ipa: '/li.vʁə/', cn: '书', examples: [{ fr: 'Je lis un livre de français.', ipa: '/ʒə li œ̃ li.vʁə də fʁɑ̃.sɛ/', cn: '我在读一本法语书。' }, { fr: 'Le livre est sur la table.', ipa: '/lə li.vʁə ɛ syʁ la tabl/', cn: '书在桌子上。' }] },
   { id: 'v-a1-6', level: 'A1', fr: 'École', ipa: '/e.kɔl/', cn: '学校', examples: [{ fr: "Les enfants vont à l'école.", ipa: '/le.z‿ɑ̃.fɑ̃ vɔ̃ a le.kɔl/', cn: '孩子们去学校。' }, { fr: "L'école est fermée samedi.", ipa: '/le.kɔl ɛ fɛʁ.me sam.di/', cn: '学校周六关闭。' }] },
   { id: 'v-a1-7', level: 'A1', fr: 'Eau', ipa: '/o/', cn: '水', examples: [{ fr: "Je voudrais un verre d'eau.", ipa: '/ʒə vu.dʁɛ œ̃ vɛʁ do/', cn: '我想要一杯水。' }, { fr: "L'eau de la mer est bleue.", ipa: '/lo də la mɛʁ ɛ blø/', cn: '海水是蓝色的。' }] },
-  { id: 'v-a1-8', level: 'A1', fr: 'Ami', ipa: '/a.mi/', cn: '朋友', examples: [{ fr: "C'est mon meilleur ami.", ipa: '/sɛ mɔ̃ mɛ.jœʁ a.mi/', cn: '这是我最好的朋友。' }, { fr: 'Nous sortons avec des amis.', ipa: '/nu sɔʁ.tɔ̃ a.vɛk de.z‿a.mi/', cn: '我们和朋友们一起出去。' }] },
+  { id: 'v-a1-8', level: 'A1', fr: 'Ami', ipa: '/a.mi/', cn: '朋友', examples: [{ fr: "C's mon meilleur ami.", ipa: '/sɛ mɔ̃ mɛ.jœʁ a.mi/', cn: '这是我最好的朋友。' }, { fr: 'Nous sortons avec des amis.', ipa: '/nu sɔʁ.tɔ̃ a.vɛk de.z‿a.mi/', cn: '我们和朋友们一起出去。' }] },
   { id: 'v-a1-9', level: 'A1', fr: 'Pain', ipa: '/pɛ̃/', cn: '面包', examples: [{ fr: "J'achète du pain frais.", ipa: '/ʒa.ʃɛt dy pɛ̃ fʁɛ/', cn: '我买新鲜的面包。' }, { fr: 'Manger du pain avec du beurre.', ipa: '/mɑ̃.ʒe dy pɛ̃ a.vɛk dy bœʁ/', cn: '面包抹黄油吃。' }] },
   { id: 'v-a1-10', level: 'A1', fr: 'Pomme', ipa: '/pɔm/', cn: '苹果', examples: [{ fr: 'La pomme est rouge.', ipa: '/la pɔm ɛ ʁuʒ/', cn: '苹果是红色的。' }, { fr: 'Je mange une pomme.', ipa: '/ʒə mɑ̃ʒ yn pɔm/', cn: '我吃一个苹果。' }] },
   { id: 'v-a1-11', level: 'A1', fr: 'Petit', ipa: '/pə.ti/', cn: '小的', examples: [{ fr: "C'est un petit chien.", ipa: '/sɛ.t‿œ̃ pə.ti ʃjɛ̃/', cn: '这是一只小狗。' }, { fr: "Un petit café, s'il vous plaît.", ipa: '/œ̃ pə.ti ka.fe sil vu plɛ/', cn: '请给我一杯小杯咖啡。' }] },
@@ -43,11 +43,11 @@ export const vocabularyData: VocabularyItem[] = [
   { id: 'v-a1-35', level: 'A1', fr: 'Demain', ipa: '/də.mɛ̃/', cn: '明天', examples: [{ fr: 'On se voit demain.', ipa: '/ɔ̃ sə vwa də.mɛ̃/', cn: '我们明天见。' }, { fr: 'Demain est un autre jour.', ipa: '/də.mɛ̃ ɛ.t‿œ̃.n‿otʁə ʒuʁ/', cn: '明天又是新的一天。' }] },
   { id: 'v-a1-36', level: 'A1', fr: 'Pain', ipa: '/pɛ̃/', cn: '面包', examples: [{ fr: 'Je vais acheter du pain.', ipa: '/ʒə vɛ a.ʃə.te dy pɛ̃/', cn: '我去买面包。' }, { fr: 'Le pain est sur la table.', ipa: '/lə pɛ̃ ɛ syʁ la tabl/', cn: '面包在桌子上。' }] },
   { id: 'v-a1-37', level: 'A1', fr: 'Lait', ipa: '/lɛ/', cn: '牛奶', examples: [{ fr: 'Je bois un verre de lait.', ipa: '/ʒə bwa œ̃ vɛʁ də lɛ/', cn: '我喝了一杯牛奶。' }, { fr: 'Le lait est frais.', ipa: '/lə lɛ ɛ fʁɛ/', cn: '牛奶很新鲜。' }] },
-  { id: 'v-a1-38', level: 'A1', fr: 'Café', ipa: '/ka.fe/', cn: '咖啡', examples: [{ fr: "Un café noir, s'il vous plaît.", ipa: '/œ̃ ka.fe nwaʁ sil vu plɛ/', cn: '请给我一杯黑咖啡。' }, { fr: 'Je prends mon café le matin.', ipa: '/ʒə pʁɑ̃ mɔ̃ ka.fe lə ma.tɛ̃/', cn: '我早晨喝咖啡。' }] },
+  { id: 'v-a1-38', level: 'A1', fr: 'Café', ipa: '/ka.fe/', cn: '咖啡', examples: [{ fr: "Un café noir, s'il vous plaît.", ipa: '/œ̃ ka.fe nwaʁ sil vu plɛ/', cn: '请给我一杯黑咖啡。' }, { fr: 'Je prends my café le matin.', ipa: '/ʒə pʁɑ̃ mɔ̃ ka.fe lə ma.tɛ̃/', cn: '我早晨喝咖啡。' }] },
   { id: 'v-a1-39', level: 'A1', fr: 'Thé', ipa: '/te/', cn: '茶', examples: [{ fr: 'Voulez-vous du thé ?', ipa: '/vu.le vu dy te/', cn: '您想喝茶吗？' }, { fr: 'Le thé est chaud.', ipa: '/lə te ɛ ʃo/', cn: '茶是烫的。' }] },
   { id: 'v-a1-40', level: 'A1', fr: 'Sucre', ipa: '/sykʁ/', cn: '糖', examples: [{ fr: 'Un café sans sucre, merci.', ipa: '/œ̃ ka.fe sɑ̃ sykʁ mɛʁ.si/', cn: '一杯咖啡，不加糖，谢谢。' }, { fr: 'Il y a trop de sucre.', ipa: '/i.l‿i.j‿a tʁo də sykʁ/', cn: '糖放得太多了。' }] },
   { id: 'v-a1-41', level: 'A1', fr: 'Chaud', ipa: '/ʃo/', cn: '热的', examples: [{ fr: 'Le café est très chaud.', ipa: '/lə ka.fe ɛ tʁɛ ʃo/', cn: '咖啡非常热。' }, { fr: "Il fait chaud aujourd'hui.", ipa: '/i fɛ ʃo o.ʒuʁ.dɥi/', cn: '今天天气很热。' }] },
-  { id: 'v-a1-42', level: 'A1', fr: 'Froid', ipa: '/fʁwa/', cn: '冷的', examples: [{ fr: "L'eau est très froide.", ipa: '/lo ɛ tʁɛ fʁwad/', cn: '水很冷。' }, { fr: "J'a froid, je ferme la fenêtre.", ipa: '/ʒe fʁwa ʒə fɛʁm la fə.nɛtʁ/', cn: '我冷，我把窗户关上。' }] },
+  { id: 'v-a1-42', level: 'A1', fr: 'Froid', ipa: '/fʁwa/', cn: '冷的', examples: [{ fr: "L'eau est très froide.", ipa: '/lo ɛ tʁɛ fʁwad/', cn: '水很冷' }, { fr: "J'a froid, je ferme la fenêtre.", ipa: '/ʒe fʁwa ʒə fɛʁm la fə.nɛtʁ/', cn: '我冷，我把窗户关上。' }] },
   { id: 'v-a1-43', level: 'A1', fr: 'Beau', ipa: '/bo/', cn: '漂亮的/好的', examples: [{ fr: 'Quel beau paysage !', ipa: '/kɛl bo pe.i.zaʒ/', cn: '多么漂亮的风景啊！' }, { fr: 'Il fait beau dehors.', ipa: '/i fɛ beau də.ɔʁ/', cn: '外面天气很好。' }] },
   { id: 'v-a1-44', level: 'A1', fr: 'Heureux', ipa: '/ø.ʁø/', cn: '快乐的', examples: [{ fr: 'Je suis très heureux de vous voir.', ipa: '/ʒə sɥi tʁɛ.z‿ø.ʁø də vu vwaʁ/', cn: '见到您我非常高兴。' }, { fr: "Ils ont l'air heureux.", ipa: '/i.l‿zɔ̃ lɛʁ ø.ʁø/', cn: '他们看起来很快乐。' }] },
   { id: 'v-a1-45', level: 'A1', fr: 'Triste', ipa: '/tʁist/', cn: '悲伤的', examples: [{ fr: 'Pourquoi es-tu triste ?', ipa: '/puʁ.kwa ɛ.ty tʁist/', cn: '你为什么难过？' }, { fr: "C'est une story triste.", ipa: '/sɛ yn is.twaʁ tʁist/', cn: '这是一个悲伤的故事。' }] },
@@ -100,7 +100,7 @@ export const vocabularyData: VocabularyItem[] = [
   { id: 'v-a2-30', level: 'A2', fr: 'Vendre', ipa: '/vɑ̃dʁ/', cn: '卖', examples: [{ fr: 'Il veut vendre sa maison.', ipa: '/i vø vɑ̃dʁ sa mɛ.zɔ̃/', cn: '他想卖掉他的房子。' }, { fr: 'Le magasin vend des fleurs.', ipa: '/lə ma.ɡa.zɛ̃ vɑ̃ de flœʁ/', cn: '这家店卖花。' }] },
   { id: 'v-a2-31', level: 'A2', fr: 'Payer', ipa: '/pe.je/', cn: '付钱', examples: [{ fr: "Je vais payer l'addition.", ipa: '/ʒə vɛ pe.je la.di.sjɔ̃/', cn: '我去结账。' }, { fr: 'Payer par carte.', ipa: '/pe.je paʁ kaʁt/', cn: '刷卡支付。' }] },
   { id: 'v-a2-32', level: 'A2', fr: 'Chercher', ipa: '/ʃɛʁ.ʃe/', cn: '寻找', examples: [{ fr: 'Je cherche mes clés.', ipa: '/ʒə ʃɛʁʃ me kle/', cn: '我正在找钥匙。' }, { fr: 'Que cherchez-vous ?', ipa: '/kə ʃɛʁ.ʃe vu/', cn: '您在找什么？' }] },
-  { id: 'v-a2-33', level: 'A2', fr: 'Trouver', ipa: '/tu.ve/', cn: '找到', examples: [{ fr: "J'ai trouvé un travail.", ipa: '/ʒe tʁu.ve œ̃ tʁa.vaj/', cn: '我找到了一份工作。' }, { fr: 'Je ne trouve pas mon sac.', ipa: '/ʒə nə tʁuv pa mɔ̃ sak/', cn: '我找不到我的包。' }] },
+  { id: 'v-a2-33', level: 'A2', fr: 'Trouver', ipa: '/tʁu.ve/', cn: '找到', examples: [{ fr: "J'ai trouvé un travail.", ipa: '/ʒe tʁu.ve œ̃ tʁa.vaj/', cn: '我找到了一份工作。' }, { fr: 'Je ne trouve pas mon sac.', ipa: '/ʒə nə tʁuv pa mɔ̃ sak/', cn: '我找不到我的包。' }] },
   { id: 'v-a2-34', level: 'A2', fr: 'Perdre', ipa: '/pɛʁdʁ/', cn: '丢失', examples: [{ fr: "J'ai perdu mon chemin.", ipa: '/ʒe pɛʁ.dy mɔ̃ ʃə.mɛ̃/', cn: '我迷路了。' }, { fr: 'Ne perdez pas espoir.', ipa: '/nə pɛʁ.de pa ɛs.pwaʁ/', cn: '不要失去希望。' }] },
   { id: 'v-a2-35', level: 'A2', fr: 'Gagner', ipa: '/ɡa.ɲe/', cn: '赢得/赚钱', examples: [{ fr: 'Gagner un match.', ipa: '/ɡa.ɲe œ̃ matʃ/', cn: '赢得一场比赛。' }, { fr: 'Il gagne bien sa vie.', ipa: '/i ɡaɲ bjɛ̃ sa vi/', cn: '他挣钱养家很不错。' }] },
   { id: 'v-a2-36', level: 'A2', fr: 'Choisir', ipa: '/ʃwa.ziʁ/', cn: '选择', examples: [{ fr: 'Je dois choisir un cadeau.', ipa: '/ʒə dwa ʃwa.ziʁ œ̃ ka.do/', cn: '我得挑个礼物。' }, { fr: 'Choisissez une option.', ipa: '/ʃwa.zi.se yn ɔp.sjɔ̃/', cn: '请选择一个选项。' }] },
@@ -131,7 +131,7 @@ export const vocabularyData: VocabularyItem[] = [
 
   // --- B1 (60 Words RESTORED & UNIQUE) ---
   { id: 'v-b1-1', level: 'B1', fr: 'Améliorer', ipa: '/a.me.ljo.ʁe/', cn: '改进/提高', examples: [{ fr: 'Je veux améliorer mon français.', cn: '我想提高我的法语。' }, { fr: 'Il faut améliorer les conditions de travail.', cn: '必须改善工作条件。' }] },
-  { id: 'v-b1-2', level: 'B1', fr: 'Quotidien', ipa: '/kɔ.ti.djɛ̃/', cn: '日常的', examples: [{ fr: "C'est un problème quotidien.", cn: '这是一个日常问题。' }, { fr: 'Je lis le quotidien national.', cn: '我读国家日报。' }] },
+  { id: 'v-b1-2', level: 'B1', fr: 'Quotidien', ipa: '/kɔ.ti.djɛ̃/', cn: '日常的', examples: [{ fr: "C'est un problem quotidien.", cn: '这是一个日常问题。' }, { fr: 'Je lis le quotidien national.', cn: '我读国家日报。' }] },
   { id: 'v-b1-3', level: 'B1', fr: 'Environnement', ipa: '/ɑ̃.vi.ʁɔn.mɑ̃/', cn: '环境', examples: [{ fr: 'Il faut protéger l’environnement.', cn: '必须保护环境。' }, { fr: 'C’est un bel environnement de travail.', cn: '这是一个良好的工作环境。' }] },
   { id: 'v-b1-4', level: 'B1', fr: 'Convaincre', ipa: '/kɔ̃.vɛ̃kʁ/', cn: '说服', examples: [{ fr: 'Il a essayé de me convaincre.', cn: '他试图说服我。' }, { fr: 'Ses arguments m’ont convaincu.', cn: '他的论点说服了我。' }] },
   { id: 'v-b1-5', level: 'B1', fr: 'Découvrir', ipa: '/de.ku.vʁiʁ/', cn: '发现', examples: [{ fr: 'J’adore découvrir de nouveaux pays.', cn: '我热爱发现新国家。' }, { fr: 'Il a découvert un secret.', cn: '他发现了一个秘密。' }] },
@@ -312,7 +312,7 @@ export const vocabularyData: VocabularyItem[] = [
   { id: 'v-c1-56', level: 'C1', fr: 'Immuable', ipa: '/i.mɥabl/', cn: '不可改变的', examples: [{ fr: 'Une loi immuable.', cn: '一条不可改变的法律。' }, { fr: 'Un principe immuable.', cn: '一个不变的原则。' }] },
   { id: 'v-c1-57', level: 'C1', fr: 'Jalonner', ipa: '/ʒa.lɔ.ne/', cn: '标志/点缀', examples: [{ fr: 'Des succès jalonnent sa vie.', cn: '成功点缀了他的生活。' }, { fr: 'Jalonner un parcours.', cn: '标志出一段旅程。' }] },
   { id: 'v-c1-58', level: 'C1', fr: 'Léser', ipa: '/le.ze/', cn: '损害/伤害', examples: [{ fr: 'Léser les intérêts de quelqu’un.', cn: '损害某人的利益。' }, { fr: 'Il s’est senti lésé.', cn: '他感到受了委屈。' }] },
-  { id: 'v-c1-59', level: 'C1', fr: 'Récurrent', ipa: '/ʁe.ky.ʁɑ̃/', cn: '经常出现的', examples: [{ fr: 'Un problème récurrent.', cn: '一个经常出现的问题。' }, { fr: 'Un motif récurrent.', cn: '一个反复出现的主题。' }] },
+  { id: 'v-c1-59', level: 'C1', fr: 'Récurrent', ipa: '/ʁe.ky.ʁɑ̃/', cn: '经常出现的', examples: [{ fr: 'Un problem récurrent.', cn: '一个经常出现的问题。' }, { fr: 'Un motif récurrent.', cn: '一个反复出现的主题。' }] },
   { id: 'v-c1-60', level: 'C1', fr: 'Tacite', ipa: '/ta.sit/', cn: '默许的', examples: [{ fr: 'Un accord tacite.', cn: '一项默契协议。' }, { fr: 'Un soutien tacite.', cn: '默许的支持。' }] },
 ];
 
@@ -390,7 +390,7 @@ export const expressionData: ExpressionItem[] = [
   { id: 'ex-1-14', category: '日常生活', fr: "Je vais me coucher tôt ce soir.", ipa: "/ʒə vɛ mə ku.ʃe to sə swaʁ/", cn: "我今晚打算早点睡。" },
   { id: 'ex-1-15', category: '日常生活', fr: "Il pleut dehors, prends ton parapluie.", ipa: "/i plø də.ɔʁ pʁɑ̃ tɔ̃ pa.ʁa.plɥi/", cn: "外面下雨了，带上伞。" },
   { id: 'ex-1-16', category: '日常生活', fr: "Je ne trouve pas mes clés.", ipa: "/ʒə nə tʁuv pa me kle/", cn: "我找不到我的钥匙。" },
-  { id: 'ex-1-17', category: '日常生活', fr: "On se voit à quelle heure demain ?", ipa: "/ɔ̃ sə vwa a kɛ.l‿œʁ də.mɛ̃/", cn: "我们明天几点见？" },
+  { id: 'ex-1-17', category: '日常生活', fr: "On se voit à quelle heure tomorrow ?", ipa: "/ɔ̃ sə vwa a kɛ.l‿œʁ də.mɛ̃/", cn: "我们明天几点见？" },
   { id: 'ex-1-18', category: '日常生活', fr: "Je vais préparer un café.", ipa: "/ʒə vɛ pʁe.pa.ʁe œ̃ ka.fe/", cn: "我去泡杯咖啡。" },
   { id: 'ex-1-19', category: '日常生活', fr: "Attends-moi une minute.", ipa: "/a.tɑ̃ mwa yn mi.nyt/", cn: "等我一分钟。" },
   { id: 'ex-1-20', category: '日常生活', fr: "C'est une excellente idée !", ipa: "/sɛ.t‿yn ɛk.se.lɑ̃t i.de/", cn: "这是个好主意！" },
@@ -400,7 +400,7 @@ export const expressionData: ExpressionItem[] = [
   { id: 'ex-1-24', category: '日常生活', fr: "Il y a trop de monde ici.", ipa: "/i.l‿i.j‿a tʁo də mɔ̃d i.si/", cn: "这儿人太多了。" },
   { id: 'ex-1-25', category: '日常生活', fr: "Je déteste le lundi matin.", ipa: "/ʒə de.tɛst lə lœ̃.di ma.tɛ̃/", cn: "我讨厌周一早上。" },
   { id: 'ex-1-26', category: '日常生活', fr: "Peux-tu m'aider à porter ce sac ?", ipa: "/pø ty m‿e.de a pɔʁ.te sə sak/", cn: "你能帮我提这个包吗？" },
-  { id: 'ex-1-27', category: '日常生活', fr: "C'est trop cher pour mon budget.", ipa: "/sɛ tʁo ʃɛʁ puʁ mɔ̃ by.dʒɛ/", cn: "这超出了我的预算。" },
+  { id: 'ex-1-27', category: '日常生活', fr: "C't trop cher pour mon budget.", ipa: "/sɛ tʁo ʃɛʁ puʁ mɔ̃ by.dʒɛ/", cn: "这超出了我的预算。" },
   { id: 'ex-1-28', category: '日常生活', fr: "Je vais lire un livre avant de dormir.", ipa: "/ʒə vɛ liʁ œ̃ li.vʁə a.vɑ̃ də dɔʁ.miʁ/", cn: "睡前我要看会儿书。" },
   { id: 'ex-1-29', category: '日常生活', fr: "Il faut que je fasse la vaisselle.", ipa: "/i fo kə ʒə fas la vɛ.sɛl/", cn: "我得去洗碗。" },
   { id: 'ex-1-30', category: '日常生活', fr: "La connexion internet est lente.", ipa: "/la kɔ.nɛk.sjɔ̃ ɛ̃.tɛʁ.nɛt ɛ lɑ̃t/", cn: "网速很慢。" },
@@ -502,7 +502,7 @@ export const expressionData: ExpressionItem[] = [
   { id: 'ex-3-22', category: '餐厅', fr: "Je voudrais une bière pression.", ipa: "/ʒə vu.dʁɛ yn bjɛʁ pʁe.sjɔ̃/", cn: "我想要一杯生啤。" },
   { id: 'ex-3-23', category: '餐厅', fr: "Avez-vous un menu en anglais ?", ipa: "/a.ve vu œ̃ mə.ny ɑ̃.n‿ɑ̃.ɡlɛ/", cn: "你们有英文菜单吗？" },
   { id: 'ex-3-24', category: '餐厅', fr: "C's quoi ce plat précisément ?", ipa: "/sɛ kwa sə pla pʁe.si.ze.mɑ̃/", cn: "这道菜具体是什么？" },
-  { id: 'ex-3-25', category: '餐厅', fr: "Il y a une erreur dans l'addition.", ipa: "/i.l‿i.j‿a yn ɛ.ʁœʁ dɑ̃ la.di.sjɔ̃/", cn: "账单上有个错误。" },
+  { id: 'ex-3-25', category: '餐厅', fr: "Il y a une error dans l'addition.", ipa: "/i.l‿i.j‿a yn ɛ.ʁœʁ dɑ̃ la.di.sjɔ̃/", cn: "账单上有个错误。" },
   { id: 'ex-3-26', category: '餐厅', fr: "Puis-je avoir un reçu ?", ipa: "/pɥi.ʒ‿a.vwaʁ œ̃ ʁə.sy/", cn: "我能要张发票吗？" },
   { id: 'ex-3-27', category: '餐厅', fr: "La cuisson n'est pas bonne.", ipa: "/la kɥi.sɔ̃ nɛ pa bɔn/", cn: "火候不对。" },
   { id: 'ex-3-28', category: '餐厅', fr: "Mon plat est froid.", ipa: "/mɔ̃ pla ɛ fʁwa/", cn: "我的菜凉了。" },
@@ -514,7 +514,7 @@ export const expressionData: ExpressionItem[] = [
   { id: 'ex-3-34', category: '餐厅', fr: "Ce sera tout pour le moment.", ipa: "/sə sə.ʁa tu puʁ lə mɔ.mɑ̃/", cn: "目前先这些。" },
   { id: 'ex-3-35', category: '餐厅', fr: "Où sont les toilettes ?", ipa: "/u sɔ̃ le twa.lɛt/", cn: "洗手间在哪里？" },
   { id: 'ex-3-36', category: '餐厅', fr: "Puis-je avoir du sel et du poivre ?", ipa: "/pɥi.ʒ‿a.vwaʁ dy sɛl e dy pwa.vʁə/", cn: "我能要点盐和胡椒吗？" },
-  { id: 'ex-3-37', category: '餐厅', fr: "Je voudrais une bouteille de vin blanc.", ipa: "/ʒə vu.dʁɛ yn bu.tɛj de vɛ̃ blɑ̃/", cn: "我要一瓶白葡萄酒。" },
+  { id: 'ex-3-37', category: '餐厅', fr: "Je voudrais une bouteille de vin blanc.", ipa: "/ʒə vu.dʁɛ yn bu.tɛj de vɛ̃ blɑ̃/", cn: "我要一瓶 white wine。" },
   { id: 'ex-3-38', category: '餐厅', fr: "Santé !", ipa: "/sɑ̃.te/", cn: "干杯！" },
   { id: 'ex-3-39', category: '餐厅', fr: "Le service est un peu lent.", ipa: "/lə sɛʁ.vis ɛ.t‿œ̃ pø lɑ̃/", cn: "服务有点慢。" },
   { id: 'ex-3-40', category: '餐厅', fr: "C'est complet ce soir.", ipa: "/sɛ kɔ̃.plɛ sə swaʁ/", cn: "今晚客满了。" },
@@ -540,7 +540,7 @@ export const expressionData: ExpressionItem[] = [
   { id: 'ex-4-8', category: '交通', fr: "Le trajet dure combien de temps ?", ipa: "/lə tʁa.ʒɛ dyʁ kɔ̃.bjɛ̃ de tɑ̃/", cn: "路程需要多长时间？" },
   { id: 'ex-4-9', category: '交通', fr: "Il y a beaucoup de bouchons ce matin.", ipa: "/i.l‿i.j‿a bo.ku de bu.ʃɔ̃ sə ma.tɛ̃/", cn: "今天早上堵车很严重。" },
   { id: 'ex-4-10', category: '交通', fr: "Je voudrais commander un taxi pour demain matin.", ipa: "/ʒə vu.dʁɛ kɔ.mɑ̃.de œ̃ tak.si puʁ de.mɛ̃ ma.tɛ̃/", cn: "我想订一辆明天早上的出租车。" },
-  { id: 'ex-4-11', category: '交通', fr: "C'est combien pour aller à l'aéroport ?", ipa: "/sɛ kɔ̃.bjɛ̃ puʁ a.le a l‿a.e.ʁo.pɔʁ/", cn: "去机场要多少钱？" },
+  { id: 'ex-4-11', category: '交通', fr: "C'est combien pour aller à l'aéroport ?", ipa: "/sɛ kɔ̃.bjɛ̃ pu a.le a l‿a.e.ʁo.pɔʁ/", cn: "去机场要多少钱？" },
   { id: 'ex-4-12', category: '交通', fr: "Déposez-moi devant l'entrée principale, s'il vous plaît.", ipa: "/de.po.ze mwa de.vɑ̃ l‿ɑ̃.tʁe pʁɛ̃.si.pal sil vu plɛ/", cn: "请在正门口放我下车。" },
   { id: 'ex-4-13', category: '交通', fr: "Puis-je avoir un reçu pour la course ?", ipa: "/pɥi.ʒ‿a.vwaʁ œ̃ ʁə.sy puʁ la kuʁs/", cn: "我能要一张打车发票吗？" },
   { id: 'ex-4-14', category: '交通', fr: "Attention à la marche en descendant du train.", ipa: "/a.tɑ̃.sjɔ̃ a la maʁʃ ɑ̃ de.sɑ̃.dɑ̃ dy tʁɛ̃/", cn: "下火车时请注意台阶。" },
@@ -626,7 +626,7 @@ export const expressionData: ExpressionItem[] = [
   { id: 'ex-5-42', category: '紧急情况', fr: "Où puis-je trouver de l'eau potable ?", ipa: "/u pɥi.ʒə tʁu.ve de l‿o pɔ.tabl/", cn: "我在哪儿能找到饮用水？" },
   { id: 'ex-5-43', category: '紧急情况', fr: "J'ai été témoin d'un crime.", ipa: "/ʒe e.te te.mwɛ̃ dœ̃ kʁim/", cn: "我目击了一场犯罪。" },
   { id: 'ex-5-44', category: '紧急情况', fr: "Décrivez l'agresseur.", ipa: "/de.kʁi.ve l‿a.ɡʁe.sœʁ/", cn: "描述一下袭击者。" },
-  { id: 'ex-5-45', category: '紧急情况', fr: "C'est une erreur, je n'ai rien fait.", ipa: "/sɛ yn ɛ.ʁœʁ ʒə nə ʁjɛ̃ fɛ/", cn: "这是个误会，我什么也没做。" },
+  { id: 'ex-5-45', category: '紧急情况', fr: "C'est une error, je n'ai rien fait.", ipa: "/sɛ yn ɛ.ʁœʁ ʒə nə ʁjɛ̃ fɛ/", cn: "这是个误会，我什么也没做。" },
   { id: 'ex-5-46', category: '紧急情况', fr: "Ne tirez pas !", ipa: "/nə ti.ʁe pa/", cn: "别开枪！" },
   { id: 'ex-5-47', category: '紧急情况', fr: "Restez groupés.", ipa: "/ʁɛs.te ɡʁu.pe/", cn: "呆在一起，别走散。" },
   { id: 'ex-5-48', category: '紧急情况', fr: "Ne paniquez pas.", ipa: "/nə pa.ni.ke pa/", cn: "不要惊慌。" },
@@ -759,7 +759,7 @@ export const grammarData: GrammarItem[] = [
   {
     id: 'g-b2-5', level: 'B2', title: "L'Accord du Participe Passé (过去分词搭配)", description: '高级搭配规则。',
     content: "除了基础规则外，重点在于 Avoir 引导的句子中：如果直接宾语 (COD) 在动词前，过去分词须与 COD 配合。",
-    examples: [{ fr: "Les fleurs que j'ai achetées.", cn: "我买的那些花。" }, { fr: "Elle s'est lavé les mains.", cn: "她洗了手（无配合，因为 hands 是 COD 且在后）。" }, { fr: "La lettre a été écrite.", cn: "信写好了（Être 动词配合）。" }]
+    examples: [{ fr: "Les fleurs que j'ai achetées.", cn: "我买的那些花。" }, { fr: "Elle s'est lavé les mains.", cn: "她洗了手（无配合，因为 hands 是 COD && 在后）。" }, { fr: "La lettre a été écrite.", cn: "信写好了（Être 动词配合）。" }]
   },
   {
     id: 'g-b2-6', level: 'B2', title: "Le Plus-que-parfait (愈过去时)", description: '表示“过去的过去”。',
@@ -827,3 +827,4 @@ export const readingData: ReadingItem[] = [
 export const examData: ExamQuestion[] = [
   { id: 'q-a1-1', level: 'A1', type: 'choice', question: "Comment dit-on 'Hello' en français ?", options: ["Bonjour", "Merci", "Au revoir", "Pardon"], correctAnswer: "Bonjour", explanation: "Bonjour 是最通用的问候语。" },
   { id: 'q-a1-2', level: 'A1', type: 'choice', question: "Quel est le verbe 'to be' ?", options: ["Avoir", "Être", "Aller", "Faire"], correctAnswer: "Être", explanation: "Être 对应英文的 be 动词。" }
+];
