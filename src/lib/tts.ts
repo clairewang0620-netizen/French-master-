@@ -1,7 +1,7 @@
 /**
- * Unified TTS Service - Premium Hotfix for iOS & Android
- * iOS: Web Speech API (speechSynthesis) - Higher quality, native integration.
- * Android: HTML5 Audio (Google TTS MP3) - Maximum compatibility for Android browsers/WebViews.
+ * Unified TTS Service - Critical Hotfix for iOS & Android
+ * iOS: Web Speech API (speechSynthesis)
+ * Android: HTML5 Audio (Google TTS MP3) with Managed Queuing
  */
 
 type PlaybackStatus = 'idle' | 'playing' | 'paused';
@@ -28,24 +28,19 @@ class TTSService {
     this.audio.onended = () => {
       if (this.isAndroid && this.status === 'playing') {
         this.currentIdx++;
-        this.playNext();
+        if (this.currentIdx < this.queue.length) {
+          setTimeout(() => this.playNextAndroid(), 500); // 0.5s interval between paragraphs
+        } else {
+          this.stop();
+          if (this.onEndCallback) this.onEndCallback();
+        }
       }
     };
 
     this.audio.onerror = () => {
-      console.error("Audio playback error on Android mode");
+      console.error("Android Audio Error");
       this.stop();
     };
-
-    // For iOS, speechSynthesis handles its own events, but we sync them here
-    if (!this.isAndroid && 'speechSynthesis' in window) {
-      // Periodic check to sync state if native events fail
-      setInterval(() => {
-        if (this.status === 'playing' && !window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-          this.setStatus('idle');
-        }
-      }, 500);
-    }
   }
 
   /**
@@ -58,9 +53,9 @@ class TTSService {
       this.audio.play().then(() => {
         this.audio.pause();
         this.isUnlocked = true;
+        console.log("Audio Unlocked");
       }).catch(() => {});
     } else {
-      // iOS speechSynthesis doesn't need "silent audio" unlock but needs gesture
       this.isUnlocked = true;
     }
   }
@@ -108,7 +103,7 @@ class TTSService {
           this.audio.play().catch(() => this.stop());
           this.setStatus('playing');
         } else {
-          this.playNext();
+          this.playNextAndroid();
         }
       } else {
         window.speechSynthesis.resume();
@@ -118,21 +113,15 @@ class TTSService {
   }
 
   private segmentText(text: string): string[] {
-    // Split for Google TTS 200 char limit
-    const sentences = text.match(/[^.!?\n]+[.!?\n]*/g) || [text];
-    const chunks: string[] = [];
-    let currentChunk = "";
-
-    for (const sentence of sentences) {
-      if ((currentChunk + sentence).length < 180) {
-        currentChunk += sentence;
+    // Split for Google TTS char limit (approx 200)
+    return text.split(/([.!?\n]+)/).reduce((acc: string[], cur, i) => {
+      if (i % 2 === 0) {
+        if (cur.trim()) acc.push(cur.trim());
       } else {
-        if (currentChunk) chunks.push(currentChunk.trim());
-        currentChunk = sentence;
+        if (acc.length > 0) acc[acc.length - 1] += cur;
       }
-    }
-    if (currentChunk) chunks.push(currentChunk.trim());
-    return chunks;
+      return acc;
+    }, []).filter(s => s.length > 0);
   }
 
   public async speak(text: string, onEnd?: () => void) {
@@ -145,9 +134,9 @@ class TTSService {
       this.queue = this.segmentText(text);
       this.currentIdx = 0;
       this.setStatus('playing');
-      this.playNext();
+      this.playNextAndroid();
     } else {
-      // iOS Native TTS
+      // iOS / Desktop Native TTS
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
       utterance.rate = 1.0;
@@ -162,16 +151,11 @@ class TTSService {
     }
   }
 
-  private playNext() {
+  private playNextAndroid() {
     if (this.status !== 'playing' || !this.isAndroid) return;
-
-    if (this.currentIdx >= this.queue.length) {
-      this.stop();
-      if (this.onEndCallback) this.onEndCallback();
-      return;
-    }
-
     const currentText = this.queue[this.currentIdx];
+    if (!currentText) { this.stop(); return; }
+    
     const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(currentText)}&tl=fr&client=tw-ob`;
     this.audio.src = url;
     this.audio.play().catch(() => this.stop());

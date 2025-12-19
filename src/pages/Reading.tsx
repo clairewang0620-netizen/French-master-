@@ -16,16 +16,15 @@ export default function Reading() {
   const filteredArticles = readingData.filter(art => selectedLevel === 'All' ? true : art.level === selectedLevel);
 
   useEffect(() => {
-    // Listen to the shared TTS service status
+    // Listen to shared TTS status
     tts.registerStatusListener((s) => setPlaybackStatus(s));
     return () => { tts.stop(); };
   }, []);
 
   const handleAudioControl = () => {
-    // Ensure unlock is called on interaction
-    tts.unlock();
-
+    tts.unlock(); // Ensure gesture unlock
     const currentStatus = tts.getStatus();
+    
     if (currentStatus === 'playing') {
       tts.pause();
     } else if (currentStatus === 'paused') {
@@ -52,30 +51,21 @@ export default function Reading() {
         </header>
 
         <article className="bg-white rounded-card p-4 shadow-soft border border-slate-50 space-y-5">
-          {/* Main Article Controller */}
-          <div className="flex justify-center border-b border-slate-50 pb-4 pt-1">
+          {/* Main Control: Icon-only, high visibility */}
+          <div className="flex justify-center border-b border-slate-50 pb-6 pt-2">
             <button 
               onClick={handleAudioControl}
               className={clsx(
-                "flex items-center gap-2.5 px-6 h-10 rounded-full font-black text-[11px] transition-all shadow-md active:scale-95",
-                playbackStatus === 'playing' ? "bg-red-500 text-white shadow-red-100" : "bg-[#7ED957] text-white shadow-green-100"
+                "w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-xl active:scale-95",
+                playbackStatus === 'playing' ? "bg-red-500 shadow-red-100" : "bg-[#7ED957] shadow-green-100"
               )}
             >
               {playbackStatus === 'playing' ? (
-                <>
-                  <Pause size={16} fill="white" />
-                  <span>暂停播放</span>
-                </>
+                <Pause size={32} fill="white" className="text-white" />
               ) : playbackStatus === 'paused' ? (
-                <>
-                  <Play size={16} fill="white" />
-                  <span>继续播放</span>
-                </>
+                <Play size={32} fill="white" className="text-white ml-1" />
               ) : (
-                <>
-                  <Volume2 size={16} fill="white" />
-                  <span>🔊 全文朗读</span>
-                </>
+                <Volume2 size={32} fill="white" className="text-white" />
               )}
             </button>
           </div>
@@ -83,7 +73,7 @@ export default function Reading() {
           <div className="space-y-6">
             {paragraphs_fr.map((para, idx) => (
               <div key={idx} className="space-y-2.5">
-                <p className="text-[15px] leading-[1.75] text-slate-800 font-medium">
+                <p className="text-[15px] leading-[1.8] text-slate-800 font-medium">
                   {para}
                 </p>
                 {showTranslation && (
@@ -98,7 +88,7 @@ export default function Reading() {
           <div className="flex flex-col gap-3.5 pt-4 border-t border-slate-50">
             <button 
               onClick={() => setShowTranslation(!showTranslation)}
-              className="flex items-center justify-center gap-2 bg-slate-50 text-slate-600 h-10 rounded-btn font-black text-[11px] active:bg-slate-100 transition-colors border border-slate-100"
+              className="flex items-center justify-center gap-2 bg-slate-50 text-slate-600 h-11 rounded-btn font-black text-[11px] active:bg-slate-100 transition-colors border border-slate-100"
             >
               <Languages size={16} />
               {showTranslation ? "隐藏对照" : "显示中法对照"}
@@ -111,15 +101,15 @@ export default function Reading() {
                </div>
                <div className="grid grid-cols-1 gap-2">
                  {activeArticle.keywords.map((kw, i) => (
-                   <div key={i} className="bg-white p-3 rounded-xl shadow-soft flex items-center justify-between border border-white">
-                     <div className="flex items-center gap-2.5">
+                   <div key={i} className="bg-white p-3 rounded-xl shadow-sm flex items-center justify-between border border-white">
+                     <div className="flex items-center gap-3">
                        <TTSButton text={kw.fr} size="sm" />
-                       <div className="overflow-hidden">
-                         <p className="font-bold text-xs text-slate-800 truncate">{kw.fr}</p>
+                       <div>
+                         <p className="font-bold text-xs text-slate-800">{kw.fr}</p>
                          <p className="text-[9px] text-slate-400 font-mono tracking-tight">{kw.ipa}</p>
                        </div>
                      </div>
-                     <span className="text-[11px] text-brand-600 font-black shrink-0 ml-2">{kw.zh}</span>
+                     <span className="text-[11px] text-brand-600 font-black">{kw.zh}</span>
                    </div>
                  ))}
                </div>
