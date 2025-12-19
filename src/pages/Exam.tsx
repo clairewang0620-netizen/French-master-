@@ -3,8 +3,7 @@ import { examData } from '../data/mockData';
 import { useUserProgress } from '../lib/store';
 import { CEFRLevel } from '../types';
 import clsx from 'clsx';
-// Added missing ChevronRight import
-import { CheckCircle, XCircle, Trophy, ArrowRight, RotateCcw, Target, AlertCircle, ChevronRight } from 'lucide-react';
+import { CheckCircle, XCircle, Trophy, ArrowRight, RotateCcw, Target, AlertCircle, ChevronRight, Inbox } from 'lucide-react';
 
 const LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1'];
 
@@ -30,6 +29,7 @@ export default function Exam() {
   };
 
   const handleSubmit = () => {
+    if (filteredQuestions.length === 0) return;
     setIsSubmitted(true);
     if (selectedOption === filteredQuestions[currentQuestionIdx].correctAnswer) {
       setScore(prev => prev + 1);
@@ -81,6 +81,21 @@ export default function Exam() {
     );
   }
 
+  if (filteredQuestions.length === 0) {
+    return (
+      <div className="max-w-xl mx-auto py-12 text-center space-y-4 animate-in fade-in">
+        <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-2">
+          <Inbox size={32} />
+        </div>
+        <h2 className="text-xl font-black text-slate-800">暂无题目</h2>
+        <p className="text-sm text-slate-400">当前等级 ({selectedLevel}) 尚未配置测试题目。</p>
+        <button onClick={() => setSelectedLevel(null)} className="px-6 py-2 bg-slate-900 text-white rounded-btn font-bold text-xs active:scale-95 transition-all">
+          返回等级选择
+        </button>
+      </div>
+    );
+  }
+
   if (finished) {
     const percentage = Math.round((score / filteredQuestions.length) * 100);
     return (
@@ -91,7 +106,7 @@ export default function Exam() {
           </div>
           <h2 className="text-xl font-black text-slate-800">测试完成 !</h2>
           <div className="text-5xl font-black text-slate-900 my-6">
-            {score}<span className="text-lg text-slate-300">/10</span>
+            {score}<span className="text-lg text-slate-300">/{filteredQuestions.length}</span>
           </div>
           <div className="w-full bg-slate-50 h-2.5 rounded-full overflow-hidden mb-8">
             <div className="h-full bg-brand-500" style={{ width: `${percentage}%` }}></div>
@@ -114,7 +129,7 @@ export default function Exam() {
   return (
     <div className="space-y-4 animate-in slide-in-from-bottom-4">
       <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-50 shadow-soft">
-        <span className="text-xs font-black text-slate-400">Question {currentQuestionIdx + 1}/10</span>
+        <span className="text-xs font-black text-slate-400">Question {currentQuestionIdx + 1}/{filteredQuestions.length}</span>
         <span className="text-[10px] font-black uppercase text-brand-500 px-3 py-1 bg-brand-50 rounded-full">Niveau {selectedLevel}</span>
       </div>
 
@@ -173,7 +188,7 @@ export default function Exam() {
         disabled={!selectedOption}
         className="w-full bg-slate-900 text-white h-12 rounded-btn font-black text-sm disabled:opacity-30 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2"
       >
-        {isSubmitted ? (currentQuestionIdx === 9 ? "查看结果" : "下一题") : "确认选择"} 
+        {isSubmitted ? (currentQuestionIdx === filteredQuestions.length - 1 ? "查看结果" : "下一题") : "确认选择"} 
         <ArrowRight size={18} />
       </button>
     </div>

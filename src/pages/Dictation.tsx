@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { vocabularyData } from '../data/mockData';
 import { useUserProgress } from '../lib/store';
 import { TTSButton } from '../components/TTSButton';
@@ -13,7 +13,7 @@ export default function Dictation() {
   const [sessionQueue, setSessionQueue] = useState<typeof vocabularyData>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [input, setInput] = useState('');
-  const [status, setStatus] = packageStatus('idle' | 'correct' | 'incorrect'>('idle');
+  const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [sessionFinished, setSessionFinished] = useState(false);
   
   const { addDictationError, removeDictationError } = useUserProgress();
@@ -76,7 +76,7 @@ export default function Dictation() {
               <div className="text-slate-400 text-xs font-bold uppercase mb-2 group-hover:text-brand-500">Groupe</div>
               <div className="text-2xl font-black text-slate-800">{i + 1}</div>
               <div className="mt-2 text-[10px] text-slate-400 font-medium">
-                {vocabularyData[i * WORDS_PER_GROUP].fr}...
+                {vocabularyData[i * WORDS_PER_GROUP] ? vocabularyData[i * WORDS_PER_GROUP].fr : '...'}
               </div>
             </button>
           ))}
@@ -142,7 +142,6 @@ export default function Dictation() {
 
          <div className="mb-14 mt-6">
            <div className="flex justify-center mb-10">
-             {/* Fix: Added missing audioUrl prop */}
              <TTSButton 
                text={currentWord.fr} 
                audioUrl={currentWord.audio}
@@ -220,8 +219,4 @@ export default function Dictation() {
       </div>
     </div>
   );
-}
-
-function packageStatus(arg0: string): [any, any] {
-    throw new Error('Function not implemented.');
 }

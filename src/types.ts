@@ -35,6 +35,17 @@ export interface ReadingItem {
   audioUrl: string; // 文章全文发音路径: reading_{index}.mp3
 }
 
+// Added ExamQuestion interface to fix the exported member error in mockData.ts
+export interface ExamQuestion {
+  id: string;
+  level: CEFRLevel;
+  type: 'choice';
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
+}
+
 export interface UserProgress {
   favorites: string[];
   dictationErrors: string[];

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { vocabularyData } from '../data/mockData';
 import { useUserProgress } from '../lib/store';
@@ -36,7 +35,6 @@ export default function Vocabulary() {
 
   if (flashCardIndex !== null) {
     const word = filteredWords[flashCardIndex];
-    const isFavorite = progress.favorites.includes(word.id);
 
     return (
       <div className="flex flex-col h-[calc(100vh-100px)] space-y-4">
@@ -73,7 +71,7 @@ export default function Vocabulary() {
            <button onClick={prevCard} disabled={flashCardIndex === 0} className="h-12 bg-slate-100 text-slate-400 rounded-btn flex items-center justify-center disabled:opacity-20"><ChevronLeft size={24} /></button>
            <button 
              onClick={() => handleMemoryBoost(word.id)}
-             className="col-span-1 h-12 bg-[#FF4C4C] text-white rounded-btn flex items-center justify-center shadow-lg active:scale-95"
+             className="col-span-1 h-12 bg-[#E53935] text-white rounded-btn flex items-center justify-center shadow-lg active:scale-95"
            >
              <Flame size={20} fill="white" />
            </button>
