@@ -17,13 +17,13 @@ export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', classNa
     e.preventDefault();
     e.stopPropagation(); 
     
-    // Explicitly call unlock on user gesture for Android
+    // Explicitly call unlock on user gesture for Android/iOS
     tts.unlock();
     
     setIsPlaying(true);
     await speakFrench(text);
     
-    // Simple visual feedback
+    // Provide visual feedback for the duration of a typical short phrase
     setTimeout(() => setIsPlaying(false), 1500);
   };
 
