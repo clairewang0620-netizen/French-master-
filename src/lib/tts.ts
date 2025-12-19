@@ -1,6 +1,6 @@
-
 /**
- * 统一发音服务 - 深度适配移动端浏览器
+ * Unified Audio Service - Specialized for French Learning
+ * Features: iOS Speech API fallback, Android HTML5 Audio, Pause/Resume Support
  */
 
 type PlaybackStatus = 'idle' | 'playing' | 'paused';
@@ -20,7 +20,20 @@ class TTSService {
   }
 
   private setupListeners() {
+    this.audio.onplay = () => {
+      this.status = 'playing';
+      this.notify();
+    };
+    this.audio.onpause = () => {
+      this.status = 'paused';
+      this.notify();
+    };
     this.audio.onended = () => {
+      this.status = 'idle';
+      this.notify();
+    };
+    this.audio.onerror = () => {
+      console.error("Audio playback error");
       this.status = 'idle';
       this.notify();
     };
@@ -32,20 +45,21 @@ class TTSService {
 
   public registerStatusListener(cb: (s: PlaybackStatus) => void) {
     this.onStatusChange = cb;
+    // Immediate initial call
+    cb(this.status);
   }
 
   public getStatus() { return this.status; }
 
   /**
-   * 核心 playAudio 函数
-   * @param text 法语原文 (用于 iOS Web Speech)
-   * @param audioUrl 音频文件地址 (用于 Android/Desktop MP3)
+   * core playAudio function
+   * Handles toggle (play/pause/resume) automatically if same source is provided
    */
   public playAudio({ text, audioUrl }: { text: string; audioUrl: string }) {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const isAndroid = /Android/.test(navigator.userAgent);
 
-    // 如果是同一个音频在播放，则执行 播放/暂停 切换逻辑
+    // Toggle logic for long audio (Readings)
     if (this.currentUrl === audioUrl && this.status !== 'idle') {
       if (this.status === 'playing') {
         this.pause();
@@ -55,38 +69,45 @@ class TTSService {
       return;
     }
 
+    // New Audio Source
     this.stop();
     this.currentText = text;
     this.currentUrl = audioUrl;
 
     if (isIOS) {
-      // iOS 使用 Web Speech API
+      // iOS prefers Web Speech API for low latency unless we use local files with specific unlocking
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.9; // 温柔语速
-      utterance.pitch = 1.0;
+      utterance.rate = 0.9;
       utterance.onstart = () => { this.status = 'playing'; this.notify(); };
       utterance.onend = () => { this.status = 'idle'; this.notify(); };
+      utterance.onerror = () => { this.status = 'idle'; this.notify(); };
       speechSynthesis.speak(utterance);
-    } else if (isAndroid) {
-      // 安卓浏览器解锁策略
+    } else {
+      // Android / Desktop - HTML5 Audio for high quality MP3
       if (!(window as any).audioUnlocked) {
+        // Dummy play to unlock audio context on first user interaction
         const unlockAudio = new Audio();
         unlockAudio.play().catch(() => {});
         (window as any).audioUnlocked = true;
       }
 
       this.audio.src = audioUrl;
+      this.audio.load();
       this.audio.play()
-        .then(() => { this.status = 'playing'; this.notify(); })
-        .catch(err => console.error('Audio播放错误:', err));
-    } else {
-      // 桌面端 Fallback
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR';
-      utterance.onstart = () => { this.status = 'playing'; this.notify(); };
-      utterance.onend = () => { this.status = 'idle'; this.notify(); };
-      speechSynthesis.speak(utterance);
+        .then(() => {
+          this.status = 'playing';
+          this.notify();
+        })
+        .catch(err => {
+          console.warn('MP3 playback failed, falling back to Web Speech:', err);
+          // Fallback if MP3 is missing or blocked
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'fr-FR';
+          utterance.onstart = () => { this.status = 'playing'; this.notify(); };
+          utterance.onend = () => { this.status = 'idle'; this.notify(); };
+          speechSynthesis.speak(utterance);
+        });
     }
   }
 
@@ -120,6 +141,7 @@ class TTSService {
     speechSynthesis.cancel();
     this.audio.pause();
     this.audio.currentTime = 0;
+    this.audio.src = '';
     this.status = 'idle';
     this.notify();
   }

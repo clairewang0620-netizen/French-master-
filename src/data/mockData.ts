@@ -3,7 +3,7 @@ import { VocabularyItem, ExpressionItem, CEFRLevel, ExamQuestion } from '../type
 const AUDIO_BASE = "/audio";
 
 // ==============================================================================
-// 1. CORE VOCABULARY (Sample of 300 items)
+// 1. CORE VOCABULARY (Bound to standardized /audio/words/ paths)
 // ==============================================================================
 export const vocabularyData: VocabularyItem[] = [
   // A1 Level
@@ -62,7 +62,7 @@ export const vocabularyData: VocabularyItem[] = [
 ];
 
 // ==============================================================================
-// 2. SCENE EXPRESSIONS (Sample of 300 items across 6 scenes)
+// 2. SCENE EXPRESSIONS (Bound to standardized /audio/scenes/ paths)
 // ==============================================================================
 export const expressionData: ExpressionItem[] = [
   // Scene: Self Intro
@@ -114,7 +114,7 @@ export const expressionData: ExpressionItem[] = [
 ];
 
 // ==============================================================================
-// 3. GRAMMAR DATA
+// 3. GRAMMAR DATA (Locked content, audio paths updated)
 // ==============================================================================
 export const grammarData = [
   {
