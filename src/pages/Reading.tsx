@@ -16,15 +16,19 @@ export default function Reading() {
   const filteredArticles = readingData.filter(art => selectedLevel === 'All' ? true : art.level === selectedLevel);
 
   useEffect(() => {
+    // Listen to the shared TTS service status
     tts.registerStatusListener((s) => setPlaybackStatus(s));
     return () => { tts.stop(); };
   }, []);
 
   const handleAudioControl = () => {
-    const status = tts.getStatus();
-    if (status === 'playing') {
+    // Ensure unlock is called on interaction
+    tts.unlock();
+
+    const currentStatus = tts.getStatus();
+    if (currentStatus === 'playing') {
       tts.pause();
-    } else if (status === 'paused') {
+    } else if (currentStatus === 'paused') {
       tts.resume();
     } else if (activeArticle) {
       tts.speak(activeArticle.content_fr);

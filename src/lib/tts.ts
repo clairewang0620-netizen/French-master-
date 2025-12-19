@@ -1,7 +1,7 @@
 /**
- * Unified TTS Service - Optimized for Android & iOS Compatibility
- * Replaces SpeechSynthesis with HTML5 Audio for maximum reliability.
- * Handles character limits by internal queuing while presenting a single-stream UI.
+ * Unified TTS Service - Premium Hotfix for iOS & Android
+ * iOS: Web Speech API (speechSynthesis) - Higher quality, native integration.
+ * Android: HTML5 Audio (Google TTS MP3) - Maximum compatibility for Android browsers/WebViews.
  */
 
 type PlaybackStatus = 'idle' | 'playing' | 'paused';
@@ -12,44 +12,57 @@ class TTSService {
   private currentIdx: number = -1;
   private status: PlaybackStatus = 'idle';
   private isUnlocked: boolean = false;
+  private isAndroid: boolean = false;
   private onStatusChange?: (status: PlaybackStatus) => void;
   private onEndCallback?: () => void;
 
   constructor() {
     this.audio = new Audio();
-    this.setupListeners();
+    if (typeof window !== 'undefined') {
+      this.isAndroid = /Android/i.test(navigator.userAgent);
+      this.setupListeners();
+    }
   }
 
   private setupListeners() {
     this.audio.onended = () => {
-      if (this.status === 'playing') {
+      if (this.isAndroid && this.status === 'playing') {
         this.currentIdx++;
         this.playNext();
       }
     };
 
     this.audio.onerror = () => {
-      console.error("Audio playback error");
+      console.error("Audio playback error on Android mode");
       this.stop();
     };
+
+    // For iOS, speechSynthesis handles its own events, but we sync them here
+    if (!this.isAndroid && 'speechSynthesis' in window) {
+      // Periodic check to sync state if native events fail
+      setInterval(() => {
+        if (this.status === 'playing' && !window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+          this.setStatus('idle');
+        }
+      }, 500);
+    }
   }
 
   /**
-   * CRITICAL: Unlock audio context for Android/iOS
-   * Must be called inside a user interaction handler.
+   * Unlock audio context for Android. Call inside user gesture.
    */
   public unlock() {
     if (this.isUnlocked) return;
-    
-    // Play a tiny silent buffer to unlock the browser's audio state
-    this.audio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA== ";
-    this.audio.play()
-      .then(() => {
+    if (this.isAndroid) {
+      this.audio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA== ";
+      this.audio.play().then(() => {
         this.audio.pause();
         this.isUnlocked = true;
-        console.log("Audio unlocked successfully");
-      })
-      .catch(e => console.warn("Audio unlock pending gesture", e));
+      }).catch(() => {});
+    } else {
+      // iOS speechSynthesis doesn't need "silent audio" unlock but needs gesture
+      this.isUnlocked = true;
+    }
   }
 
   private setStatus(s: PlaybackStatus) {
@@ -66,8 +79,12 @@ class TTSService {
   }
 
   public stop() {
-    this.audio.pause();
-    this.audio.src = "";
+    if (this.isAndroid) {
+      this.audio.pause();
+      this.audio.src = "";
+    } else {
+      window.speechSynthesis.cancel();
+    }
     this.queue = [];
     this.currentIdx = -1;
     this.setStatus('idle');
@@ -75,28 +92,33 @@ class TTSService {
 
   public pause() {
     if (this.status === 'playing') {
-      this.audio.pause();
+      if (this.isAndroid) {
+        this.audio.pause();
+      } else {
+        window.speechSynthesis.pause();
+      }
       this.setStatus('paused');
     }
   }
 
   public resume() {
-    if (this.status === 'paused' && this.currentIdx !== -1) {
-      this.setStatus('playing');
-      // If we were in the middle of a segment, just play()
-      if (this.audio.src) {
-        this.audio.play().catch(() => this.stop());
+    if (this.status === 'paused') {
+      if (this.isAndroid) {
+        if (this.audio.src) {
+          this.audio.play().catch(() => this.stop());
+          this.setStatus('playing');
+        } else {
+          this.playNext();
+        }
       } else {
-        this.playNext();
+        window.speechSynthesis.resume();
+        this.setStatus('playing');
       }
     }
   }
 
-  /**
-   * Splits text into safe chunks for the TTS endpoint (approx 200 chars)
-   */
   private segmentText(text: string): string[] {
-    // Split by punctuation to keep natural flow, then sub-split if too long
+    // Split for Google TTS 200 char limit
     const sentences = text.match(/[^.!?\n]+[.!?\n]*/g) || [text];
     const chunks: string[] = [];
     let currentChunk = "";
@@ -113,28 +135,35 @@ class TTSService {
     return chunks;
   }
 
-  private getTTSUrl(text: string): string {
-    // Use the reliable Google TTS endpoint for high-quality French pronunciation
-    return `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=fr&client=tw-ob`;
-  }
-
   public async speak(text: string, onEnd?: () => void) {
     if (!text) return;
-    
     this.unlock();
     this.stop();
     this.onEndCallback = onEnd;
-    
-    this.queue = this.segmentText(text);
-    if (this.queue.length === 0) return;
-    
-    this.currentIdx = 0;
-    this.setStatus('playing');
-    this.playNext();
+
+    if (this.isAndroid) {
+      this.queue = this.segmentText(text);
+      this.currentIdx = 0;
+      this.setStatus('playing');
+      this.playNext();
+    } else {
+      // iOS Native TTS
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 1.0;
+      utterance.onend = () => {
+        this.setStatus('idle');
+        if (this.onEndCallback) this.onEndCallback();
+      };
+      utterance.onerror = () => this.stop();
+      
+      this.setStatus('playing');
+      window.speechSynthesis.speak(utterance);
+    }
   }
 
   private playNext() {
-    if (this.status !== 'playing') return;
+    if (this.status !== 'playing' || !this.isAndroid) return;
 
     if (this.currentIdx >= this.queue.length) {
       this.stop();
@@ -143,11 +172,9 @@ class TTSService {
     }
 
     const currentText = this.queue[this.currentIdx];
-    this.audio.src = this.getTTSUrl(currentText);
-    this.audio.play().catch((e) => {
-      console.error("Playback failed, likely missing gesture", e);
-      this.stop();
-    });
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(currentText)}&tl=fr&client=tw-ob`;
+    this.audio.src = url;
+    this.audio.play().catch(() => this.stop());
   }
 }
 

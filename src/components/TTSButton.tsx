@@ -7,7 +7,6 @@ interface TTSButtonProps {
   text: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-  label?: string; 
 }
 
 export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', className }) => {
@@ -17,14 +16,14 @@ export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', classNa
     e.preventDefault();
     e.stopPropagation(); 
     
-    // Explicitly call unlock on user gesture for Android/iOS
+    // Explicitly call unlock on user gesture
     tts.unlock();
     
     setIsPlaying(true);
     await speakFrench(text);
     
-    // Provide visual feedback for the duration of a typical short phrase
-    setTimeout(() => setIsPlaying(false), 1500);
+    // Temporary visual state for single phrases
+    setTimeout(() => setIsPlaying(false), 2000);
   };
 
   const iconSizes = {
