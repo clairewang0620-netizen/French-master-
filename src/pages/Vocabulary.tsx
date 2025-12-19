@@ -39,7 +39,7 @@ export default function Vocabulary() {
       if (!isFavorite) {
         toggleFavorite(word.id);
       }
-      // Mandatory flow: Advance to next word immediately after marking for boost
+      // Mandatory flow: Auto-advance after boosting memory
       nextCard();
     };
 
@@ -69,14 +69,14 @@ export default function Vocabulary() {
           <div className="mt-4 flex-1 space-y-4">
             <p className="text-lg text-slate-700 font-bold border-b border-slate-50 pb-3">{word.cn}</p>
             
-            <div className="space-y-2.5 text-left">
+            <div className="space-y-3 text-left">
               <h4 className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Exemples</h4>
               {word.examples.map((ex, idx) => (
-                <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-start gap-3">
+                <div key={idx} className="p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex items-start gap-4">
                   <TTSButton text={ex.fr} size="sm" />
                   <div className="flex-1 overflow-hidden">
-                    <p className="text-slate-800 font-bold text-sm leading-snug">{ex.fr}</p>
-                    <p className="text-slate-500 text-[11px] mt-0.5">{ex.cn}</p>
+                    <p className="text-slate-800 font-bold text-[14px] leading-snug">{ex.fr}</p>
+                    <p className="text-slate-500 text-[12px] mt-1 font-medium">{ex.cn}</p>
                   </div>
                 </div>
               ))}
@@ -85,23 +85,23 @@ export default function Vocabulary() {
         </div>
 
         <div className="grid grid-cols-4 gap-2 py-2">
-           <button onClick={prevCard} disabled={flashCardIndex === 0} className="h-10 bg-slate-100 text-slate-400 rounded-btn flex items-center justify-center disabled:opacity-20 active:scale-90 transition-all">
-             <ChevronLeft size={20} />
+           <button onClick={prevCard} disabled={flashCardIndex === 0} className="h-12 bg-slate-100 text-slate-400 rounded-btn flex items-center justify-center disabled:opacity-20 active:scale-90 transition-all">
+             <ChevronLeft size={24} />
            </button>
            
            <button 
              onClick={handleMemoryBoost}
              className={clsx(
-               "col-span-1 h-10 rounded-btn flex items-center justify-center transition-all active:scale-95 shadow-soft border",
-               "bg-[#FF4C4C] text-white border-[#FF4C4C]" // Explicit red for memory boost (#FF4C4C)
+               "col-span-1 h-12 rounded-btn flex items-center justify-center transition-all active:scale-95 shadow-soft border",
+               "bg-[#FF4C4C] text-white border-[#FF4C4C]" // Explicit requested red (#FF4C4C)
              )}
            >
-             <Flame size={18} fill="white" />
-             <span className="ml-1 text-[10px] font-bold">加强</span>
+             <Flame size={20} fill="white" />
+             <span className="ml-1 text-[11px] font-bold">加强</span>
            </button>
 
-           <button onClick={nextCard} className="col-span-2 h-10 bg-slate-900 text-white rounded-btn font-black text-xs flex items-center justify-center gap-2 active:scale-95 shadow-md">
-             <CheckCircle2 size={16} /> 认识
+           <button onClick={nextCard} className="col-span-2 h-12 bg-slate-900 text-white rounded-btn font-black text-xs flex items-center justify-center gap-2 active:scale-95 shadow-md">
+             <CheckCircle2 size={18} /> 认识
            </button>
         </div>
       </div>

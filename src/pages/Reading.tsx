@@ -3,7 +3,7 @@ import { readingData } from '../data/readingData';
 import { TTSButton } from '../components/TTSButton';
 import { ArrowLeft, BookOpen, Clock, Languages, Volume2, Pause, Play, Sparkles } from 'lucide-react';
 import { CEFRLevel } from '../types';
-import { tts } from '../lib/tts';
+import { tts, playAudio } from '../lib/tts';
 import clsx from 'clsx';
 
 export default function Reading() {
@@ -16,13 +16,12 @@ export default function Reading() {
   const filteredArticles = readingData.filter(art => selectedLevel === 'All' ? true : art.level === selectedLevel);
 
   useEffect(() => {
-    // Sync local state with global TTS status
     tts.registerStatusListener((s) => setPlaybackStatus(s));
     return () => { tts.stop(); };
   }, []);
 
   const handleAudioControl = () => {
-    tts.unlock(); // Mandatory unlock for mobile
+    tts.unlock();
     const currentStatus = tts.getStatus();
     
     if (currentStatus === 'playing') {
@@ -30,7 +29,7 @@ export default function Reading() {
     } else if (currentStatus === 'paused') {
       tts.resume();
     } else if (activeArticle) {
-      tts.speak(activeArticle.content_fr);
+      playAudio({ text: activeArticle.content_fr });
     }
   };
 
@@ -50,34 +49,34 @@ export default function Reading() {
           </div>
         </header>
 
-        <article className="bg-white rounded-card p-4 shadow-soft border border-slate-50 space-y-5">
-          {/* Single central control button for full article playback */}
-          <div className="flex justify-center border-b border-slate-50 pb-6 pt-2">
+        <article className="bg-white rounded-card p-4 shadow-soft border border-slate-50 space-y-6">
+          {/* Main article playback control - Icon only */}
+          <div className="flex justify-center border-b border-slate-50 pb-8 pt-2">
             <button 
               onClick={handleAudioControl}
               className={clsx(
-                "w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-xl active:scale-95",
+                "w-20 h-20 rounded-full flex items-center justify-center transition-all shadow-xl active:scale-95",
                 playbackStatus === 'playing' ? "bg-[#FF4C4C] shadow-red-100" : "bg-[#7CFC00] shadow-green-100"
               )}
             >
               {playbackStatus === 'playing' ? (
-                <Pause size={32} fill="white" className="text-white" />
+                <Pause size={40} fill="white" className="text-white" />
               ) : playbackStatus === 'paused' ? (
-                <Play size={32} fill="white" className="text-white ml-1" />
+                <Play size={40} fill="white" className="text-white ml-1.5" />
               ) : (
-                <Volume2 size={32} fill="white" className="text-white" />
+                <Volume2 size={40} fill="white" className="text-white" />
               )}
             </button>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             {paragraphs_fr.map((para, idx) => (
-              <div key={idx} className="space-y-2.5">
-                <p className="text-[15px] leading-[1.8] text-slate-800 font-medium tracking-wide">
+              <div key={idx} className="space-y-3">
+                <p className="text-[17px] leading-[1.8] text-slate-800 font-medium tracking-wide">
                   {para}
                 </p>
                 {showTranslation && (
-                  <div className="p-3.5 rounded-xl bg-slate-50 border-l-4 border-brand-200 text-slate-500 text-[13px] italic animate-in fade-in leading-relaxed">
+                  <div className="p-4 rounded-2xl bg-slate-50 border-l-4 border-brand-200 text-slate-500 text-[14px] italic animate-in fade-in leading-relaxed">
                     {paragraphs_zh[idx]}
                   </div>
                 )}
@@ -85,31 +84,31 @@ export default function Reading() {
             ))}
           </div>
 
-          <div className="flex flex-col gap-3.5 pt-4 border-t border-slate-50">
+          <div className="flex flex-col gap-4 pt-6 border-t border-slate-50">
             <button 
               onClick={() => setShowTranslation(!showTranslation)}
-              className="flex items-center justify-center gap-2 bg-slate-50 text-slate-600 h-11 rounded-btn font-black text-[11px] active:bg-slate-100 transition-colors border border-slate-100"
+              className="flex items-center justify-center gap-2 bg-slate-50 text-slate-600 h-12 rounded-btn font-black text-[12px] active:bg-slate-100 transition-colors border border-slate-100 shadow-sm"
             >
-              <Languages size={16} />
-              {showTranslation ? "隐藏对照" : "显示中法对照"}
+              <Languages size={18} />
+              {showTranslation ? "隐藏翻译" : "显示中法对照"}
             </button>
 
-            <section className="bg-brand-50 rounded-card p-4 space-y-3">
+            <section className="bg-brand-50 rounded-card p-5 space-y-4">
                <div className="flex items-center gap-2 text-brand-600">
-                 <Sparkles size={16} />
-                 <h3 className="font-black text-[10px] uppercase tracking-wider">重点词汇</h3>
+                 <Sparkles size={18} />
+                 <h3 className="font-black text-[11px] uppercase tracking-wider">重点词汇</h3>
                </div>
-               <div className="grid grid-cols-1 gap-2">
+               <div className="grid grid-cols-1 gap-2.5">
                  {activeArticle.keywords.map((kw, i) => (
-                   <div key={i} className="bg-white p-3 rounded-xl shadow-sm flex items-center justify-between border border-white">
-                     <div className="flex items-center gap-3">
+                   <div key={i} className="bg-white p-4 rounded-xl shadow-sm flex items-center justify-between border border-white">
+                     <div className="flex items-center gap-4">
                        <TTSButton text={kw.fr} size="sm" />
                        <div>
-                         <p className="font-bold text-xs text-slate-800">{kw.fr}</p>
-                         <p className="text-[9px] text-slate-400 font-mono tracking-tight">{kw.ipa}</p>
+                         <p className="font-bold text-sm text-slate-800">{kw.fr}</p>
+                         <p className="text-[10px] text-slate-400 font-mono tracking-tight">{kw.ipa}</p>
                        </div>
                      </div>
-                     <span className="text-[11px] text-brand-600 font-black">{kw.zh}</span>
+                     <span className="text-[12px] text-brand-600 font-black">{kw.zh}</span>
                    </div>
                  ))}
                </div>
@@ -124,12 +123,12 @@ export default function Reading() {
     <div className="space-y-3">
       <header className="flex justify-between items-center pb-1">
         <h1 className="text-lg font-black text-slate-900">精选阅读</h1>
-        <div className="text-[9px] text-brand-500 bg-brand-50 px-2.5 py-1 rounded-full font-black tracking-wider">
+        <div className="text-[9px] text-brand-500 bg-brand-50 px-2.5 py-1 rounded-full font-black tracking-wider uppercase">
           {filteredArticles.length} Articles
         </div>
       </header>
 
-      <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+      <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
         {['All', 'A1', 'A2', 'B1', 'B2', 'C1'].map((lvl) => (
           <button
             key={lvl}
@@ -154,7 +153,6 @@ export default function Reading() {
             <div className="absolute top-[-15px] right-[-15px] opacity-[0.03] text-slate-900">
               <BookOpen size={80} />
             </div>
-            
             <div className="flex items-center justify-between relative z-10">
               <span className="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-md text-[8px] font-black uppercase tracking-widest">
                 {art.level}
@@ -164,11 +162,9 @@ export default function Reading() {
                  <span className="text-[8px] font-bold">~{Math.ceil(art.content_fr.length / 120)} min</span>
               </div>
             </div>
-            
             <h3 className="text-[15px] font-black text-slate-800 leading-tight relative z-10 truncate group-hover:text-brand-500 transition-colors">
               {art.title}
             </h3>
-            
             <p className="text-slate-400 text-[11px] font-medium line-clamp-1 relative z-10 opacity-70">
               {art.content_fr.slice(0, 50)}...
             </p>
