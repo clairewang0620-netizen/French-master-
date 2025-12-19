@@ -1,27 +1,23 @@
 import React from 'react';
 import { Volume2 } from 'lucide-react';
-import { playAudio } from '../lib/tts';
+import { speakFrench } from '../lib/tts';
 import { clsx } from 'clsx';
 
 interface TTSButtonProps {
   text: string;
-  audioUrl: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-  color?: string; // 支持特定颜色覆盖
 }
 
 export const TTSButton: React.FC<TTSButtonProps> = ({ 
   text, 
-  audioUrl, 
   size = 'md', 
-  className, 
-  color 
+  className
 }) => {
   const handlePlay = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    playAudio({ text, audioUrl });
+    speakFrench(text);
   };
 
   const iconSizes = { sm: 14, md: 18, lg: 24 };
@@ -32,7 +28,7 @@ export const TTSButton: React.FC<TTSButtonProps> = ({
       onClick={handlePlay} 
       className={clsx(
         "flex items-center justify-center text-white transition-all active:scale-90 shadow-sm",
-        color ? color : "bg-[#8BC34A] hover:bg-[#7cb342]", // Updated to #8BC34A
+        "bg-success hover:bg-[#6ecb47]", 
         "rounded-full shrink-0",
         dimensions[size],
         className

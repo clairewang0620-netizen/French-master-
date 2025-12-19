@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { readingData } from '../data/readingData';
 import { ArrowLeft, Languages, Pause, Play, Sparkles } from 'lucide-react';
-import { tts } from '../lib/tts';
+import { tts, speakFrench } from '../lib/tts';
 import clsx from 'clsx';
 
 export default function Reading() {
@@ -18,17 +18,21 @@ export default function Reading() {
 
   const handleMasterControl = () => {
     if (!article) return;
-    const status = tts.getStatus();
     
-    // Toggle logic is handled inside tts.playAudio when the same audioUrl is passed
-    tts.playAudio({ text: article.content_fr, audioUrl: article.audioUrl });
+    if (playbackStatus === 'playing') {
+      tts.stop();
+    } else {
+      speakFrench(article.content_fr);
+    }
   };
 
   if (article) {
     return (
       <div className="space-y-4 animate-in slide-in-from-bottom-4 pb-20">
         <header className="flex items-center gap-3 sticky top-0 bg-white/95 backdrop-blur-md py-2 z-10">
-          <button onClick={() => { setActiveId(null); tts.stop(); }} className="p-1.5 bg-slate-50 rounded-full text-slate-400 active:scale-90 transition-transform"><ArrowLeft size={20} /></button>
+          <button onClick={() => { setActiveId(null); tts.stop(); }} className="p-1.5 bg-slate-50 rounded-full text-slate-400 active:scale-90 transition-transform">
+            <ArrowLeft size={20} />
+          </button>
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-black text-slate-900 truncate">{article.title}</h1>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Niveau {article.level}</p>
@@ -36,7 +40,6 @@ export default function Reading() {
         </header>
 
         <article className="bg-white rounded-card p-6 shadow-md border border-slate-50 space-y-6">
-          {/* Main Playback Control */}
           <div className="flex justify-center border-b border-slate-50 pb-8 pt-4">
             <button 
               onClick={handleMasterControl}

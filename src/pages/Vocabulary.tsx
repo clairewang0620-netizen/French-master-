@@ -26,11 +26,9 @@ export default function Vocabulary() {
   };
 
   const handleMemoryBoost = (wordId: string) => {
-    // Add to favorites if not already there
     if (!progress.favorites.includes(wordId)) {
       toggleFavorite(wordId);
     }
-    // UX Logic: Immediately move to next card for high efficiency
     nextCard();
   };
 
@@ -50,7 +48,7 @@ export default function Vocabulary() {
           <h2 className="text-4xl font-black text-slate-900 tracking-tight">{word.fr}</h2>
           <div className="flex items-center gap-2 mt-2">
             <p className="text-slate-400 font-mono">{word.ipa}</p>
-            <TTSButton text={word.fr} audioUrl={word.audio} size="md" />
+            <TTSButton text={word.fr} size="md" />
           </div>
           <p className="text-xl text-slate-700 font-bold mt-4">{word.cn}</p>
 
@@ -58,7 +56,7 @@ export default function Vocabulary() {
             <p className="text-[10px] font-black uppercase text-slate-300 tracking-widest">例句 (Exemples)</p>
             {word.examples.map((ex, i) => (
               <div key={i} className="p-3 bg-slate-50 rounded-xl flex items-start gap-3 border border-slate-100">
-                <TTSButton text={ex.fr} audioUrl={ex.audio} size="sm" />
+                <TTSButton text={`${word.fr}: ${ex.fr}`} size="sm" />
                 <div>
                   <p className="text-sm font-bold text-slate-800 leading-tight">{ex.fr}</p>
                   <p className="text-[11px] text-slate-500 mt-1">{ex.cn}</p>
@@ -125,7 +123,7 @@ export default function Vocabulary() {
               <p className="text-xs text-slate-400">{word.cn}</p>
             </div>
             <div className="flex items-center gap-3">
-              <TTSButton text={word.fr} audioUrl={word.audio} size="sm" />
+              <TTSButton text={word.fr} size="sm" />
             </div>
           </button>
         ))}

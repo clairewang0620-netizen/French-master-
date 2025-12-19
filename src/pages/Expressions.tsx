@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { expressionData } from '../data/mockData';
 import { TTSButton } from '../components/TTSButton';
@@ -26,7 +25,7 @@ export default function Expressions() {
                  <p className="text-[10px] font-mono text-slate-400 italic">{expr.ipa}</p>
                  <p className="text-sm text-slate-500 font-medium mt-1">{expr.cn}</p>
               </div>
-              <TTSButton text={expr.fr} audioUrl={expr.audio} size="md" />
+              <TTSButton text={expr.fr} size="md" />
             </div>
           ))}
         </div>

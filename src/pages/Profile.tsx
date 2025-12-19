@@ -52,8 +52,7 @@ export default function Profile() {
               favoriteWords.map(w => (
                 <div key={w.id} className="flex items-center justify-between p-3.5 bg-white border border-slate-100 rounded-xl shadow-soft">
                   <div className="flex items-center gap-3 overflow-hidden">
-                    {/* Fix: Added missing audioUrl prop */}
-                    <TTSButton text={w.fr} audioUrl={w.audio} size="sm" />
+                    <TTSButton text={w.fr} size="sm" />
                     <div className="overflow-hidden">
                       <p className="font-bold text-slate-800 truncate">{w.fr}</p>
                       <p className="text-[10px] text-slate-400 font-medium truncate">{w.cn}</p>
@@ -78,8 +77,7 @@ export default function Profile() {
               difficultWords.map(w => (
                 <div key={w.id} className="flex items-center justify-between p-3.5 bg-red-50/50 border border-red-100 rounded-xl shadow-soft">
                   <div className="flex items-center gap-3 overflow-hidden">
-                    {/* Fix: Added missing audioUrl prop */}
-                    <TTSButton text={w.fr} audioUrl={w.audio} size="sm" />
+                    <TTSButton text={w.fr} size="sm" />
                     <div className="overflow-hidden">
                       <p className="font-bold text-red-900 truncate">{w.fr}</p>
                       <p className="text-[10px] text-red-700/60 font-medium truncate">{w.cn}</p>

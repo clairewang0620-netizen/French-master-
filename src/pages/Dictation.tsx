@@ -57,7 +57,6 @@ export default function Dictation() {
     }
   };
 
-  // --- Group Selection View ---
   if (selectedGroup === null) {
     return (
       <div className="space-y-8 animate-in fade-in duration-500">
@@ -85,7 +84,6 @@ export default function Dictation() {
     );
   }
 
-  // --- Finished View ---
   if (sessionFinished) {
     return (
       <div className="max-w-xl mx-auto text-center pt-10 animate-in zoom-in duration-300">
@@ -135,7 +133,6 @@ export default function Dictation() {
       </header>
 
       <div className="bg-white p-10 md:p-14 rounded-[3rem] shadow-2xl border border-slate-100 text-center relative overflow-hidden">
-         {/* Progress Bar */}
          <div className="h-1.5 bg-slate-50 w-full absolute top-0 left-0">
             <div className="h-full bg-brand-500 transition-all duration-700" style={{ width: `${((currentIndex + 1) / sessionQueue.length) * 100}%` }}></div>
          </div>
@@ -144,9 +141,8 @@ export default function Dictation() {
            <div className="flex justify-center mb-10">
              <TTSButton 
                text={currentWord.fr} 
-               audioUrl={currentWord.audio}
                size="lg" 
-               className="w-24 h-24 shadow-2xl shadow-brand-200 bg-brand-600 hover:bg-brand-500" 
+               className="w-24 h-24 shadow-2xl shadow-brand-200" 
              />
            </div>
            <p className="text-slate-400 text-xs font-black uppercase tracking-widest mb-3">提示 (Indication)</p>
