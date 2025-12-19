@@ -1,81 +1,65 @@
-
-import React, { useState } from 'react';
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { Book, MessageCircle, GraduationCap, BookOpen, Mic, PenTool, Menu, X, Home, User } from 'lucide-react';
+import React from 'react';
+import { Outlet, NavLink } from 'react-router-dom';
+import { Book, MessageCircle, GraduationCap, BookOpen, Mic, PenTool, Home, User } from 'lucide-react';
 import { clsx } from 'clsx';
 
 const navItems = [
   { path: '/', label: '首页', icon: Home },
-  { path: '/vocab', label: '核心词汇', icon: Book },
-  { path: '/expressions', label: '场景会话', icon: MessageCircle },
-  { path: '/grammar', label: '语法解析', icon: GraduationCap },
-  { path: '/reading', label: '精选阅读', icon: BookOpen },
-  { path: '/dictation', label: '听力听写', icon: Mic },
-  { path: '/exam', label: '等级考试', icon: PenTool },
-  { path: '/profile', label: '个人中心', icon: User },
+  { path: '/vocab', label: '词汇', icon: Book },
+  { path: '/expressions', label: '会话', icon: MessageCircle },
+  { path: '/reading', label: '阅读', icon: BookOpen },
+  { path: '/exam', label: '测试', icon: PenTool },
+  { path: '/profile', label: '我的', icon: User },
 ];
 
 export default function Layout() {
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const location = useLocation();
-
-  const closeSidebar = () => setSidebarOpen(false);
-
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
-      {/* Mobile Header */}
-      <div className="md:hidden bg-white p-4 flex items-center justify-between shadow-sm sticky top-0 z-50">
-        <h1 className="text-xl font-black text-brand-600 tracking-tight">FrenchMaster</h1>
-        <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="p-2 text-slate-600">
-          {isSidebarOpen ? <X /> : <Menu />}
-        </button>
-      </div>
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center">
+      {/* Mobile-centric container: Max 420px on larger screens */}
+      <div className="w-full max-w-[420px] bg-white min-h-screen shadow-xl flex flex-col relative pb-20">
+        
+        {/* Header - Compact */}
+        <header className="px-4 py-3 bg-white border-b border-slate-100 flex items-center justify-between sticky top-0 z-50">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-black text-lg">F</span>
+            </div>
+            <h1 className="text-lg font-black text-slate-800 tracking-tight">FrenchMaster</h1>
+          </div>
+        </header>
 
-      {/* Sidebar Navigation */}
-      <aside className={clsx(
-        "fixed md:sticky md:top-0 h-screen w-72 bg-white border-r border-slate-200 z-40 transition-transform duration-300 ease-in-out md:translate-x-0 overflow-y-auto",
-        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
-        <div className="p-8 hidden md:block">
-          <h1 className="text-2xl font-black text-brand-600 tracking-tighter">FrenchMaster</h1>
-          <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-bold mt-1">L'Art d'Apprendre</p>
-        </div>
+        {/* Main Content Area */}
+        <main className="flex-1 p-4 overflow-x-hidden">
+          <Outlet />
+        </main>
 
-        <nav className="px-4 pb-8 space-y-2">
+        {/* Bottom Navigation - Solid background, mobile-first */}
+        <nav className="fixed bottom-0 w-full max-w-[420px] bg-white border-t border-slate-100 px-2 py-1 flex justify-around items-center z-50 shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
-                onClick={closeSidebar}
                 className={({ isActive }) => clsx(
-                  "flex items-center gap-4 px-6 py-4 rounded-2xl text-base font-bold transition-all",
+                  "flex flex-col items-center justify-center py-2 px-1 transition-all rounded-xl",
                   isActive 
-                    ? "bg-brand-500 text-white shadow-lg shadow-brand-100" 
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    ? "text-brand-500" 
+                    : "text-slate-400 hover:text-slate-600"
                 )}
               >
-                <Icon size={22} strokeWidth={2.5} />
-                {item.label}
+                {/* Use a function for children to properly access isActive state from NavLink */}
+                {({ isActive }) => (
+                  <>
+                    <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                    <span className="text-[10px] font-bold mt-1">{item.label}</span>
+                  </>
+                )}
               </NavLink>
             );
           })}
         </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-5 md:p-10 max-w-6xl mx-auto w-full">
-         <Outlet />
-      </main>
-
-      {/* Overlay for mobile sidebar */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 md:hidden"
-          onClick={closeSidebar}
-        />
-      )}
+      </div>
     </div>
   );
 }

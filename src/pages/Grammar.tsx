@@ -12,26 +12,24 @@ export default function Grammar() {
   const levels: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1']; 
   const filteredGrammar = grammarData.filter(g => g.level === selectedLevel);
 
-  const toggle = (id: string) => setOpenId(openId === id ? null : id);
-
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">基础语法库</h1>
-        <p className="text-slate-600 mt-1">从 A1 到 C1 的完整语法解析</p>
+    <div className="space-y-4">
+      <header className="space-y-1">
+        <h1 className="text-lg font-black text-slate-800">基础语法库</h1>
+        <p className="text-xs text-slate-400 font-medium">A1-C1 系统化学习</p>
       </header>
 
-      {/* Level Tabs */}
-      <div className="border-b border-slate-200 flex gap-4 overflow-x-auto no-scrollbar">
+      {/* Compact Level Tabs */}
+      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
         {levels.map(lvl => (
           <button
             key={lvl}
             onClick={() => setSelectedLevel(lvl)}
             className={clsx(
-              "pb-3 px-6 font-bold text-lg transition-all border-b-4 rounded-t-lg whitespace-nowrap",
+              "px-5 py-2 rounded-full font-black text-xs transition-all border",
               selectedLevel === lvl 
-                ? "border-brand-500 text-brand-600 bg-brand-50" 
-                : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+                ? "bg-slate-900 text-white border-slate-900 shadow-md" 
+                : "bg-white text-slate-400 border-slate-100"
             )}
           >
             {lvl}
@@ -39,62 +37,54 @@ export default function Grammar() {
         ))}
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-3">
         {filteredGrammar.map((item) => {
           const isOpen = openId === item.id;
           return (
-            <div key={item.id} className={clsx("bg-white rounded-3xl border transition-all duration-300 overflow-hidden", isOpen ? "border-brand-200 shadow-xl ring-1 ring-brand-100" : "border-slate-200 shadow-sm hover:border-brand-200 hover:shadow-md")}>
+            <div key={item.id} className={clsx("bg-white rounded-card border transition-all overflow-hidden", isOpen ? "border-brand-200 shadow-md" : "border-slate-100 shadow-soft")}>
               <button 
-                onClick={() => toggle(item.id)}
-                className="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition-colors"
+                onClick={() => setOpenId(isOpen ? null : item.id)}
+                className="w-full flex items-center justify-between p-4 text-left active:bg-slate-50 transition-colors"
               >
-                <div className="flex items-center gap-5">
-                  <div className={clsx("w-12 h-12 rounded-2xl flex items-center justify-center transition-colors shadow-sm flex-shrink-0", isOpen ? "bg-brand-500 text-white" : "bg-slate-100 text-slate-400")}>
-                    <BookOpen size={24} />
+                <div className="flex items-center gap-4">
+                  <div className={clsx("w-9 h-9 rounded-xl flex items-center justify-center transition-colors shadow-inner", isOpen ? "bg-brand-500 text-white" : "bg-slate-100 text-slate-300")}>
+                    <BookOpen size={18} />
                   </div>
                   <div>
-                    <h3 className={clsx("text-xl font-bold transition-colors", isOpen ? "text-brand-700" : "text-slate-800")}>{item.title}</h3>
-                    <p className="text-slate-500 text-sm mt-1 line-clamp-1">{item.description}</p>
+                    <h3 className={clsx("text-sm font-black tracking-tight", isOpen ? "text-brand-600" : "text-slate-800")}>{item.title}</h3>
+                    <p className="text-slate-400 text-[10px] font-bold mt-0.5 line-clamp-1">{item.description}</p>
                   </div>
                 </div>
-                {isOpen ? <ChevronDown className="text-brand-500 flex-shrink-0" /> : <ChevronRight className="text-slate-300 flex-shrink-0" />}
+                {isOpen ? <ChevronDown size={18} className="text-brand-500" /> : <ChevronRight size={18} className="text-slate-200" />}
               </button>
               
               {isOpen && (
-                <div className="p-8 pt-0 bg-white animate-in fade-in duration-300">
-                  <div className="w-full h-px bg-slate-100 mb-6" />
+                <div className="px-4 pb-5 animate-in fade-in duration-300 space-y-4">
+                  <div className="w-full h-px bg-slate-50" />
                   
-                  {/* Tips Section if exists */}
                   {item.tips && (
-                    <div className="mb-6 bg-amber-50 border border-amber-100 p-4 rounded-xl flex gap-3 text-amber-800">
-                      <Lightbulb className="flex-shrink-0 text-amber-500" size={20} />
-                      <p className="text-sm font-medium leading-relaxed">{item.tips}</p>
+                    <div className="bg-amber-50 border border-amber-100 p-3 rounded-xl flex gap-2 text-amber-700">
+                      <Lightbulb className="shrink-0 text-amber-400" size={16} />
+                      <p className="text-[11px] font-bold leading-relaxed">{item.tips}</p>
                     </div>
                   )}
 
-                  {/* Explanation Area */}
-                  <div className="mb-8 prose prose-slate max-w-none text-slate-700 leading-8">
-                    {/* Render content with simple formatting preservation */}
+                  <div className="text-[13px] text-slate-600 leading-relaxed space-y-2 font-medium">
                     {item.content.split('\n').map((line, i) => (
-                      <p key={i} className={clsx("mb-2", line.startsWith('-') && "pl-4", line.startsWith('**') && "font-bold text-slate-900 mt-4")}>
+                      <p key={i} className={clsx(line.startsWith('-') && "pl-3", line.startsWith('**') && "font-black text-slate-800 mt-3")}>
                         {line.replace(/\*\*/g, '')}
                       </p>
                     ))}
                   </div>
                   
-                  {/* Examples Area */}
-                  <div className="space-y-4">
-                    <h4 className="font-bold text-xs uppercase text-slate-400 tracking-wider mb-2 flex items-center gap-2">
-                      <span className="w-8 h-px bg-slate-200"></span> Exemples (例句)
-                    </h4>
+                  <div className="space-y-2 pt-2">
+                    <h4 className="font-black text-[10px] uppercase text-slate-300 tracking-wider">例句 (Exemples)</h4>
                     {item.examples.map((ex, idx) => (
-                      <div key={idx} className="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-white hover:shadow-sm transition-all group">
-                        <div className="mt-1 flex-shrink-0">
-                          <TTSButton text={ex.fr} size="sm" />
-                        </div>
+                      <div key={idx} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-50">
+                        <TTSButton text={ex.fr} size="sm" />
                         <div>
-                          <p className="font-bold text-brand-900 text-lg group-hover:text-brand-600 transition-colors">{ex.fr}</p>
-                          <p className="text-slate-500 mt-1">{ex.cn}</p>
+                          <p className="font-black text-slate-800 text-[13px] leading-tight">{ex.fr}</p>
+                          <p className="text-slate-400 text-[11px] font-bold mt-0.5">{ex.cn}</p>
                         </div>
                       </div>
                     ))}
@@ -104,14 +94,6 @@ export default function Grammar() {
             </div>
           );
         })}
-        
-        {filteredGrammar.length === 0 && (
-          <div className="text-center py-16 bg-white rounded-3xl border border-dashed border-slate-200">
-            <BookOpen size={48} className="mx-auto text-slate-200 mb-4" />
-            <p className="text-slate-400 text-lg">该级别内容即将上线</p>
-            <p className="text-slate-300 text-sm mt-2">Contenu bientôt disponible</p>
-          </div>
-        )}
       </div>
     </div>
   );

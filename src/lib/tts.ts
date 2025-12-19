@@ -10,6 +10,7 @@ class TTSService {
   private queue: string[] = [];
   private currentIdx: number = -1;
   private onEndCallback?: () => void;
+  private activeUtterance: SpeechSynthesisUtterance | null = null;
 
   constructor() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -20,8 +21,9 @@ class TTSService {
   private init() {
     const loadVoices = () => {
       this.voices = window.speechSynthesis.getVoices();
+      // Prioritize French voices, especially Google ones which are stable on Android
       this.selectedVoice = 
-        this.voices.find(v => v.lang === 'fr-FR' && v.name.includes('Google')) ||
+        this.voices.find(v => v.lang === 'fr-FR' && (v.name.includes('Google') || v.name.includes('Premium'))) ||
         this.voices.find(v => v.lang === 'fr-FR') ||
         this.voices.find(v => v.lang.startsWith('fr')) ||
         null;
@@ -41,14 +43,20 @@ class TTSService {
     window.speechSynthesis.cancel();
     this.queue = [];
     this.currentIdx = -1;
+    this.activeUtterance = null;
   }
 
   public async speak(text: string, onEnd?: () => void) {
-    await this.stop();
+    if (!text) return;
+    
+    // Always stop and clear before starting new speech
+    window.speechSynthesis.cancel();
     this.onEndCallback = onEnd;
+    this.currentIdx = -1;
+    this.activeUtterance = null;
 
     // Split text for sequential playback (Android requirement for long strings)
-    // Split by common punctuation to keep sentences natural
+    // Mobile browsers often fail on strings > 200 characters
     this.queue = text.split(/([.!?\n]+)/).reduce((acc: string[], cur, i) => {
       if (i % 2 === 0) {
         if (cur.trim()) acc.push(cur.trim());
@@ -60,38 +68,55 @@ class TTSService {
 
     if (this.queue.length === 0) return;
     
-    this.currentIdx = 0;
-    this.playNext();
+    // Small delay after cancel() to ensure engine state is reset before starting speak()
+    // This is a critical fix for Android Chrome
+    setTimeout(() => {
+      this.currentIdx = 0;
+      this.playNext();
+    }, 100);
   }
 
   private playNext() {
-    if (this.currentIdx >= this.queue.length) {
+    if (this.currentIdx < 0 || this.currentIdx >= this.queue.length) {
       if (this.onEndCallback) this.onEndCallback();
+      this.activeUtterance = null;
       return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(this.queue[this.currentIdx]);
+    const textToSpeak = this.queue[this.currentIdx];
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.lang = 'fr-FR';
-    utterance.rate = 0.9;
+    utterance.rate = 0.95;
     utterance.pitch = 1.0;
+    utterance.volume = 1.0;
     
     if (this.selectedVoice) {
       utterance.voice = this.selectedVoice;
     }
 
     utterance.onend = () => {
-      // Small delay for Android stability
+      // Small delay for mobile stability and natural phrasing
       setTimeout(() => {
-        this.currentIdx++;
-        this.playNext();
-      }, 150);
+        // Guard check to ensure we haven't stopped in the meantime
+        if (this.currentIdx !== -1) {
+          this.currentIdx++;
+          this.playNext();
+        }
+      }, 100);
     };
 
-    utterance.onerror = (e) => {
-      console.error('TTS Error:', e);
-      this.stop();
+    utterance.onerror = (e: any) => {
+      // 'interrupted' or 'canceled' are common and often non-fatal state errors
+      if (e.error !== 'interrupted' && e.error !== 'canceled') {
+        console.error('TTS Error:', e.error || e);
+      }
+      // If it's a genuine error, clean up
+      if (e.error !== 'interrupted') {
+        this.stop();
+      }
     };
 
+    this.activeUtterance = utterance;
     window.speechSynthesis.speak(utterance);
   }
 }

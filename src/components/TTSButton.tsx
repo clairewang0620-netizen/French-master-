@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Volume2 } from 'lucide-react';
-import { speakFrench, tts } from '../lib/tts';
+import { speakFrench } from '../lib/tts';
 import { clsx } from 'clsx';
 
 interface TTSButtonProps {
@@ -21,31 +20,30 @@ export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', classNa
     setIsPlaying(true);
     await speakFrench(text);
     
-    // We don't have a reliable per-utterance callback in simple speakFrench, 
-    // so we simulate the active state or just stop it if it's already playing elsewhere.
+    // Safety timeout to reset state
     setTimeout(() => setIsPlaying(false), 2000);
   };
 
   const iconSizes = {
-    sm: 18,
-    md: 22,
-    lg: 26
+    sm: 16,
+    md: 18,
+    lg: 22
   };
 
   const heights = {
-    sm: 'h-11 px-4',
-    md: 'h-12 px-6',
-    lg: 'h-14 px-8'
+    sm: 'h-9 px-3',
+    md: 'h-11 px-5', // Reached approx 44px
+    lg: 'h-12 px-6'
   };
 
   return (
     <button 
       onClick={handlePlay} 
       className={clsx(
-        "flex items-center justify-center gap-2 font-bold text-white transition-all active:scale-95 shadow-md",
-        "bg-[#7ED957] hover:bg-[#6ec948] rounded-[24px]",
+        "flex items-center justify-center gap-2 font-bold text-white transition-all active:scale-95 shadow-soft",
+        "bg-[#7ED957] hover:bg-[#6ec948] rounded-btn shrink-0",
         heights[size],
-        isPlaying && "ring-4 ring-[#7ED957]/30",
+        isPlaying && "ring-4 ring-[#7ED957]/20",
         className
       )}
       aria-label="Play pronunciation"
