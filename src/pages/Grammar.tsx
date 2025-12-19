@@ -78,7 +78,8 @@ export default function Grammar() {
                     <h4 className="font-black text-[9px] uppercase text-slate-300 tracking-widest">例句 (Exemples)</h4>
                     {item.examples.map((ex, idx) => (
                       <div key={idx} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                        <TTSButton text={ex.fr} size="sm" />
+                        {/* Fix: Added missing audioUrl prop */}
+                        <TTSButton text={ex.fr} audioUrl={ex.audio} size="sm" />
                         <div className="overflow-hidden">
                           <p className="font-bold text-slate-900 text-sm leading-tight truncate">{ex.fr}</p>
                           <p className="text-slate-400 text-[11px] font-bold mt-1 truncate">{ex.cn}</p>

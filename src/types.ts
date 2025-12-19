@@ -7,10 +7,12 @@ export interface VocabularyItem {
   cn: string;
   ipa: string;
   level: CEFRLevel;
+  audio: string; // 单词发音路径: {level}_{index}_{word}.mp3
   examples: {
     fr: string;
     cn: string;
-    ipa?: string; // Standard IPA for the example sentence
+    ipa?: string;
+    audio: string; // 例句发音路径: {level}_{index}_{word}_{sIdx}.mp3
   }[];
 }
 
@@ -20,36 +22,17 @@ export interface ExpressionItem {
   fr: string;
   cn: string;
   ipa: string;
-}
-
-export interface GrammarItem {
-  id: string;
-  level: CEFRLevel;
-  title: string;
-  description: string;
-  content: string;
-  examples: { fr: string; cn: string; ipa?: string }[];
-  tips?: string;
+  audio: string; // 场景发音路径: scene_{sceneName}_{index}.mp3
 }
 
 export interface ReadingItem {
   id: string;
   title: string;
   level: CEFRLevel;
-  content_fr: string; // Full French text
-  content_zh: string; // Full Chinese translation
+  content_fr: string;
+  content_zh: string;
   keywords: { fr: string; ipa: string; zh: string }[];
-  audio: boolean;
-}
-
-export interface ExamQuestion {
-  id: string;
-  level: CEFRLevel;
-  type: 'choice' | 'boolean' | 'fill';
-  question: string;
-  options?: string[];
-  correctAnswer: string;
-  explanation: string;
+  audioUrl: string; // 文章全文发音路径: reading_{index}.mp3
 }
 
 export interface UserProgress {

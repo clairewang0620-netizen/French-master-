@@ -13,7 +13,7 @@ export default function Dictation() {
   const [sessionQueue, setSessionQueue] = useState<typeof vocabularyData>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [input, setInput] = useState('');
-  const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
+  const [status, setStatus] = packageStatus('idle' | 'correct' | 'incorrect'>('idle');
   const [sessionFinished, setSessionFinished] = useState(false);
   
   const { addDictationError, removeDictationError } = useUserProgress();
@@ -142,9 +142,10 @@ export default function Dictation() {
 
          <div className="mb-14 mt-6">
            <div className="flex justify-center mb-10">
-             {/* Fix: removed variant prop which is not defined in TTSButtonProps interface */}
+             {/* Fix: Added missing audioUrl prop */}
              <TTSButton 
                text={currentWord.fr} 
+               audioUrl={currentWord.audio}
                size="lg" 
                className="w-24 h-24 shadow-2xl shadow-brand-200 bg-brand-600 hover:bg-brand-500" 
              />
@@ -219,4 +220,8 @@ export default function Dictation() {
       </div>
     </div>
   );
+}
+
+function packageStatus(arg0: string): [any, any] {
+    throw new Error('Function not implemented.');
 }
