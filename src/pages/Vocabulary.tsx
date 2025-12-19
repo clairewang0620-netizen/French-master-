@@ -39,7 +39,7 @@ export default function Vocabulary() {
       if (!isFavorite) {
         toggleFavorite(word.id);
       }
-      // Mandatory flow: Auto-advance to next word
+      // Mandatory flow: Advance to next word immediately after marking for boost
       nextCard();
     };
 
@@ -93,11 +93,11 @@ export default function Vocabulary() {
              onClick={handleMemoryBoost}
              className={clsx(
                "col-span-1 h-10 rounded-btn flex items-center justify-center transition-all active:scale-95 shadow-soft border",
-               "bg-[#FF4C4C] text-white border-[#FF4C4C]" // Explicit Red for boost
+               "bg-[#FF4C4C] text-white border-[#FF4C4C]" // Explicit red for memory boost (#FF4C4C)
              )}
            >
              <Flame size={18} fill="white" />
-             <span className="ml-1 text-[11px] font-bold">加强记忆</span>
+             <span className="ml-1 text-[10px] font-bold">加强</span>
            </button>
 
            <button onClick={nextCard} className="col-span-2 h-10 bg-slate-900 text-white rounded-btn font-black text-xs flex items-center justify-center gap-2 active:scale-95 shadow-md">

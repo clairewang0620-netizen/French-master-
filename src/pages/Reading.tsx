@@ -16,13 +16,13 @@ export default function Reading() {
   const filteredArticles = readingData.filter(art => selectedLevel === 'All' ? true : art.level === selectedLevel);
 
   useEffect(() => {
-    // Sync UI with global TTS status
+    // Sync local state with global TTS status
     tts.registerStatusListener((s) => setPlaybackStatus(s));
     return () => { tts.stop(); };
   }, []);
 
   const handleAudioControl = () => {
-    tts.unlock(); // Ensure gesture unlock
+    tts.unlock(); // Mandatory unlock for mobile
     const currentStatus = tts.getStatus();
     
     if (currentStatus === 'playing') {
@@ -51,7 +51,7 @@ export default function Reading() {
         </header>
 
         <article className="bg-white rounded-card p-4 shadow-soft border border-slate-50 space-y-5">
-          {/* Main article playback control */}
+          {/* Single central control button for full article playback */}
           <div className="flex justify-center border-b border-slate-50 pb-6 pt-2">
             <button 
               onClick={handleAudioControl}
@@ -73,7 +73,7 @@ export default function Reading() {
           <div className="space-y-6">
             {paragraphs_fr.map((para, idx) => (
               <div key={idx} className="space-y-2.5">
-                <p className="text-[15px] leading-[1.8] text-slate-800 font-medium">
+                <p className="text-[15px] leading-[1.8] text-slate-800 font-medium tracking-wide">
                   {para}
                 </p>
                 {showTranslation && (

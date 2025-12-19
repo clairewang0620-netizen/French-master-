@@ -1,6 +1,6 @@
 /**
  * Unified TTS Service - Premium Hotfix for iOS & Android
- * iOS: Web Speech API (speechSynthesis) - Natural & Reliable
+ * iOS: Web Speech API (speechSynthesis) - Natural French Prosody
  * Android: HTML5 Audio (Google TTS) - Guaranteed Compatibility
  */
 
@@ -13,7 +13,6 @@ class TTSService {
   private status: PlaybackStatus = 'idle';
   private isUnlocked: boolean = false;
   private isAndroid: boolean = false;
-  private isIOS: boolean = false;
   private onStatusChange?: (status: PlaybackStatus) => void;
   private onEndCallback?: () => void;
 
@@ -22,18 +21,17 @@ class TTSService {
     if (typeof window !== 'undefined') {
       const ua = navigator.userAgent;
       this.isAndroid = /Android/i.test(ua);
-      this.isIOS = /iPad|iPhone|iPod/.test(ua);
       this.setupListeners();
     }
   }
 
   private setupListeners() {
-    // For Android (HTML5 Audio)
+    // For Android (HTML5 Audio) queue management
     this.audio.onended = () => {
       if (this.isAndroid && this.status === 'playing') {
         this.currentIdx++;
         if (this.currentIdx < this.queue.length) {
-          // 0.5s interval between paragraphs as requested
+          // 0.5s interval between paragraphs for natural flow as requested
           setTimeout(() => this.playNextAndroid(), 500);
         } else {
           this.stop();
@@ -42,24 +40,24 @@ class TTSService {
       }
     };
 
-    this.audio.onerror = () => {
-      console.error("Audio playback error");
+    this.audio.onerror = (e) => {
+      console.error("Audio playback error", e);
       this.stop();
     };
   }
 
   /**
-   * CRITICAL: Unlock audio on Android. Must be called inside user gesture.
+   * CRITICAL: Unlock audio for mobile browsers. Must be called inside user gesture.
    */
   public unlock() {
     if (this.isUnlocked) return;
     
-    // Global flag for general use
+    // Set global flag as requested in logic snippet
     (window as any).audioUnlocked = true;
     
     if (this.isAndroid) {
-      // Play 0.1s silent audio to unlock the media stack
-      this.audio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA== ";
+      // Trigger unlock strategy with a silent buffer
+      this.audio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
       this.audio.play().then(() => {
         this.audio.pause();
         this.isUnlocked = true;
@@ -122,8 +120,7 @@ class TTSService {
   }
 
   private segmentText(text: string): string[] {
-    // Split for Google TTS character limits (approx 200 chars)
-    // Helps creating natural gaps in articles
+    // Split for Google TTS character limits and natural paragraph pauses
     return text.split(/([.!?\n]+)/).reduce((acc: string[], cur, i) => {
       if (i % 2 === 0) {
         if (cur.trim()) acc.push(cur.trim());
@@ -146,10 +143,10 @@ class TTSService {
       this.setStatus('playing');
       this.playNextAndroid();
     } else {
-      // iOS / Desktop (speechSynthesis)
+      // iOS / Desktop (speechSynthesis) - Applying exact parameters from hotfix request
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.9;
+      utterance.rate = 0.9; // Natural and gentle
       utterance.pitch = 1.0;
       
       utterance.onend = () => {
@@ -170,7 +167,10 @@ class TTSService {
     
     const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(currentText)}&tl=fr&client=tw-ob`;
     this.audio.src = url;
-    this.audio.play().catch(() => this.stop());
+    this.audio.play().catch((err) => {
+      console.error('Audio play error:', err);
+      this.stop();
+    });
   }
 }
 

@@ -17,13 +17,13 @@ export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', classNa
     e.preventDefault();
     e.stopPropagation(); 
     
-    // Mandatory unlock on user gesture
+    // Explicitly unlock on user gesture
     tts.unlock();
     
     setIsPlaying(true);
     await speakFrench(text);
     
-    // Feedback duration
+    // Feedback duration for UI interaction
     setTimeout(() => setIsPlaying(false), 1500);
   };
 
@@ -44,7 +44,7 @@ export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', classNa
       onClick={handlePlay} 
       className={clsx(
         "flex items-center justify-center text-white transition-all active:scale-90 shadow-md",
-        color ? color : "bg-[#7CFC00] hover:bg-[#6ed900]", // Distinct light green (#7CFC00)
+        color ? color : "bg-[#7CFC00] hover:bg-[#6ed900]", // High-visibility light green (#7CFC00)
         "rounded-full shrink-0",
         dimensions[size],
         isPlaying && "ring-4 ring-white/30 scale-110",
