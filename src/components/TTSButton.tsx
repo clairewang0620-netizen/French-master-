@@ -7,10 +7,10 @@ interface TTSButtonProps {
   text: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-  label?: string;
+  label?: string; // Kept for interface compatibility but ignored for icon-only mandate
 }
 
-export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', className, label }) => {
+export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', className }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handlePlay = async (e: React.MouseEvent) => {
@@ -20,8 +20,8 @@ export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', classNa
     setIsPlaying(true);
     await speakFrench(text);
     
-    // Safety timeout to reset state
-    setTimeout(() => setIsPlaying(false), 2000);
+    // Pulse animation reset
+    setTimeout(() => setIsPlaying(false), 1500);
   };
 
   const iconSizes = {
@@ -30,26 +30,25 @@ export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', classNa
     lg: 22
   };
 
-  const heights = {
-    sm: 'h-9 px-3',
-    md: 'h-11 px-5', // Reached approx 44px
-    lg: 'h-12 px-6'
+  const dimensions = {
+    sm: 'w-8 h-8',
+    md: 'w-10 h-10',
+    lg: 'w-12 h-12'
   };
 
   return (
     <button 
       onClick={handlePlay} 
       className={clsx(
-        "flex items-center justify-center gap-2 font-bold text-white transition-all active:scale-95 shadow-soft",
-        "bg-[#7ED957] hover:bg-[#6ec948] rounded-btn shrink-0",
-        heights[size],
+        "flex items-center justify-center text-white transition-all active:scale-90 shadow-soft",
+        "bg-[#7ED957] hover:bg-[#6ec948] rounded-full shrink-0",
+        dimensions[size],
         isPlaying && "ring-4 ring-[#7ED957]/20",
         className
       )}
-      aria-label="Play pronunciation"
+      aria-label="播放读音"
     >
       <Volume2 size={iconSizes[size]} fill="white" />
-      {label && <span className="text-sm">{label}</span>}
     </button>
   );
 };

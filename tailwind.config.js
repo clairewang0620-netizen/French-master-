@@ -10,8 +10,8 @@ export default {
         brand: {
           50: '#f0f9ff',
           100: '#e0f2fe',
-          500: '#38bdf8', // Soft sky blue
-          600: '#0284c7',
+          500: '#4da6ff', // Softer blue
+          600: '#3385ff',
           900: '#0c4a6e',
         },
         success: '#7ED957', // Accent light green for TTS
@@ -19,26 +19,27 @@ export default {
         bgSoft: '#f8fafc',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         'xs': '12px',
-        'sm': '14px',
-        'base': '15px',
+        'sm': '13px',
+        'base': '14px',
         'lg': '16px',
         'xl': '18px',
         '2xl': '20px',
       },
       spacing: {
-        'mobile-safe': '16px',
-        'card-gap': '12px',
+        'mobile-safe': '12px',
+        'card-gap': '10px',
       },
       borderRadius: {
-        'card': '16px',
-        'btn': '22px',
+        'card': '12px',
+        'btn': '20px',
       },
       boxShadow: {
-        'soft': '0 2px 8px -1px rgba(0, 0, 0, 0.05), 0 1px 3px -1px rgba(0, 0, 0, 0.03)',
+        'soft': '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03)',
+        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
       }
     },
   },

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { Book, MessageCircle, GraduationCap, BookOpen, Mic, PenTool, Home, User } from 'lucide-react';
+import { Book, MessageCircle, BookOpen, PenTool, Home, User } from 'lucide-react';
 import { clsx } from 'clsx';
 
 const navItems = [
@@ -14,27 +14,27 @@ const navItems = [
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center">
-      {/* Mobile-centric container: Max 420px on larger screens */}
-      <div className="w-full max-w-[420px] bg-white min-h-screen shadow-xl flex flex-col relative pb-20">
+    <div className="min-h-screen bg-[#f5f7fa] flex flex-col items-center font-sans antialiased text-slate-800">
+      {/* Mobile-centric container: Max 420px */}
+      <div className="w-full max-w-[420px] bg-white min-h-screen shadow-2xl flex flex-col relative pb-[70px]">
         
-        {/* Header - Compact */}
+        {/* Header - Compact & Solid */}
         <header className="px-4 py-3 bg-white border-b border-slate-100 flex items-center justify-between sticky top-0 z-50">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-black text-lg">F</span>
+            <div className="w-7 h-7 bg-brand-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-black text-sm">L</span>
             </div>
-            <h1 className="text-lg font-black text-slate-800 tracking-tight">FrenchMaster</h1>
+            <h1 className="text-base font-black text-slate-900 tracking-tight">Lumière French</h1>
           </div>
         </header>
 
-        {/* Main Content Area */}
+        {/* Content Area */}
         <main className="flex-1 p-4 overflow-x-hidden">
           <Outlet />
         </main>
 
-        {/* Bottom Navigation - Solid background, mobile-first */}
-        <nav className="fixed bottom-0 w-full max-w-[420px] bg-white border-t border-slate-100 px-2 py-1 flex justify-around items-center z-50 shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
+        {/* Bottom Navigation - Solid background, thumb-friendly */}
+        <nav className="fixed bottom-0 w-full max-w-[420px] bg-white border-t border-slate-100 px-1 py-1 flex justify-around items-center z-50 shadow-[0_-2px_8px_rgba(0,0,0,0.03)]">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -42,16 +42,13 @@ export default function Layout() {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) => clsx(
-                  "flex flex-col items-center justify-center py-2 px-1 transition-all rounded-xl",
-                  isActive 
-                    ? "text-brand-500" 
-                    : "text-slate-400 hover:text-slate-600"
+                  "flex flex-col items-center justify-center flex-1 py-2 transition-all",
+                  isActive ? "text-brand-500" : "text-slate-400"
                 )}
               >
-                {/* Use a function for children to properly access isActive state from NavLink */}
                 {({ isActive }) => (
                   <>
-                    <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                    <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
                     <span className="text-[10px] font-bold mt-1">{item.label}</span>
                   </>
                 )}

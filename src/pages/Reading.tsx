@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { readingData } from '../data/readingData';
 import { TTSButton } from '../components/TTSButton';
-import { ArrowLeft, BookOpen, Clock, Languages, Volume2, Sparkles } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Languages, Volume2, Pause, Play, Sparkles } from 'lucide-react';
 import { CEFRLevel } from '../types';
 import { tts } from '../lib/tts';
 import clsx from 'clsx';
@@ -10,24 +10,26 @@ export default function Reading() {
   const [activeArticleId, setActiveArticleId] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<CEFRLevel | 'All'>('All');
   const [showTranslation, setShowTranslation] = useState(false);
-  const [isReadingFull, setIsReadingFull] = useState(false);
+  const [playbackStatus, setPlaybackStatus] = useState(tts.getStatus());
   
   const activeArticle = readingData.find(r => r.id === activeArticleId);
   const filteredArticles = readingData.filter(art => selectedLevel === 'All' ? true : art.level === selectedLevel);
 
-  const handleReadFull = () => {
-    if (isReadingFull) {
-      tts.stop();
-      setIsReadingFull(false);
-    } else if (activeArticle) {
-      setIsReadingFull(true);
-      tts.speak(activeArticle.content_fr, () => setIsReadingFull(false));
-    }
-  };
-
   useEffect(() => {
+    tts.registerStatusListener((s) => setPlaybackStatus(s));
     return () => { tts.stop(); };
   }, []);
+
+  const handleAudioControl = () => {
+    const status = tts.getStatus();
+    if (status === 'playing') {
+      tts.pause();
+    } else if (status === 'paused') {
+      tts.resume();
+    } else if (activeArticle) {
+      tts.speak(activeArticle.content_fr);
+    }
+  };
 
   if (activeArticle) {
     const paragraphs_fr = activeArticle.content_fr.split('\n\n');
@@ -35,38 +37,53 @@ export default function Reading() {
 
     return (
       <div className="space-y-4 animate-in slide-in-from-bottom-4">
-        <header className="flex items-center gap-3 sticky top-0 bg-white/95 backdrop-blur py-2 z-10 border-b border-slate-50">
-          <button onClick={() => { setActiveArticleId(null); tts.stop(); }} className="p-2 bg-slate-50 rounded-full text-slate-400 active:scale-90 transition-transform">
-            <ArrowLeft size={20} />
+        <header className="flex items-center gap-3 sticky top-0 bg-white/95 backdrop-blur-md py-2 z-10 border-b border-slate-50">
+          <button onClick={() => { setActiveArticleId(null); tts.stop(); }} className="p-1.5 bg-slate-50 rounded-full text-slate-400 active:scale-90">
+            <ArrowLeft size={18} />
           </button>
-          <div className="flex-1">
-            <h1 className="text-base font-black text-slate-800 truncate">{activeArticle.title}</h1>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Niveau {activeArticle.level}</p>
+          <div className="flex-1 overflow-hidden">
+            <h1 className="text-sm font-black text-slate-900 truncate tracking-tight">{activeArticle.title}</h1>
+            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Niveau {activeArticle.level}</p>
           </div>
         </header>
 
-        <article className="bg-white rounded-card p-5 shadow-soft border border-slate-100 space-y-6">
-          <div className="flex justify-center border-b border-slate-50 pb-5">
+        <article className="bg-white rounded-card p-4 shadow-soft border border-slate-50 space-y-5">
+          {/* Main Article Controller */}
+          <div className="flex justify-center border-b border-slate-50 pb-4 pt-1">
             <button 
-              onClick={handleReadFull}
+              onClick={handleAudioControl}
               className={clsx(
-                "flex items-center gap-2 px-6 h-11 rounded-btn font-black text-sm transition-all shadow-md active:scale-95",
-                isReadingFull ? "bg-red-500 text-white shadow-red-100" : "bg-[#7ED957] text-white shadow-green-100"
+                "flex items-center gap-2.5 px-6 h-10 rounded-full font-black text-[11px] transition-all shadow-md active:scale-95",
+                playbackStatus === 'playing' ? "bg-red-500 text-white shadow-red-100" : "bg-[#7ED957] text-white shadow-green-100"
               )}
             >
-              <Volume2 size={18} fill="white" />
-              {isReadingFull ? "停止播放" : "🔊 法音"}
+              {playbackStatus === 'playing' ? (
+                <>
+                  <Pause size={16} fill="white" />
+                  <span>暂停播放</span>
+                </>
+              ) : playbackStatus === 'paused' ? (
+                <>
+                  <Play size={16} fill="white" />
+                  <span>继续播放</span>
+                </>
+              ) : (
+                <>
+                  <Volume2 size={16} fill="white" />
+                  <span>🔊 全文朗读</span>
+                </>
+              )}
             </button>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-6">
             {paragraphs_fr.map((para, idx) => (
-              <div key={idx} className="space-y-3">
-                <p className="text-lg leading-[1.8] text-slate-800 font-medium">
+              <div key={idx} className="space-y-2.5">
+                <p className="text-[15px] leading-[1.75] text-slate-800 font-medium">
                   {para}
                 </p>
                 {showTranslation && (
-                  <div className="p-3 rounded-xl bg-slate-50 border-l-4 border-brand-200 text-slate-500 text-sm italic animate-in fade-in leading-relaxed">
+                  <div className="p-3.5 rounded-xl bg-slate-50 border-l-4 border-brand-200 text-slate-500 text-[13px] italic animate-in fade-in leading-relaxed">
                     {paragraphs_zh[idx]}
                   </div>
                 )}
@@ -74,31 +91,31 @@ export default function Reading() {
             ))}
           </div>
 
-          <div className="flex flex-col gap-4 pt-6 border-t border-slate-50">
+          <div className="flex flex-col gap-3.5 pt-4 border-t border-slate-50">
             <button 
               onClick={() => setShowTranslation(!showTranslation)}
-              className="flex items-center justify-center gap-2 bg-slate-100 text-slate-600 h-11 rounded-btn font-black text-sm active:bg-slate-200 transition-colors"
+              className="flex items-center justify-center gap-2 bg-slate-50 text-slate-600 h-10 rounded-btn font-black text-[11px] active:bg-slate-100 transition-colors border border-slate-100"
             >
-              <Languages size={18} />
+              <Languages size={16} />
               {showTranslation ? "隐藏对照" : "显示中法对照"}
             </button>
 
-            <section className="bg-sky-50 rounded-card p-5 space-y-4">
+            <section className="bg-brand-50 rounded-card p-4 space-y-3">
                <div className="flex items-center gap-2 text-brand-600">
-                 <Sparkles size={18} />
-                 <h3 className="font-black text-sm uppercase">重点词汇</h3>
+                 <Sparkles size={16} />
+                 <h3 className="font-black text-[10px] uppercase tracking-wider">重点词汇</h3>
                </div>
                <div className="grid grid-cols-1 gap-2">
                  {activeArticle.keywords.map((kw, i) => (
-                   <div key={i} className="bg-white p-3 rounded-xl shadow-sm flex items-center justify-between border border-slate-50">
-                     <div className="flex items-center gap-3">
+                   <div key={i} className="bg-white p-3 rounded-xl shadow-soft flex items-center justify-between border border-white">
+                     <div className="flex items-center gap-2.5">
                        <TTSButton text={kw.fr} size="sm" />
-                       <div>
-                         <p className="font-black text-sm text-slate-800">{kw.fr}</p>
-                         <p className="text-[10px] text-slate-400 font-mono">{kw.ipa}</p>
+                       <div className="overflow-hidden">
+                         <p className="font-bold text-xs text-slate-800 truncate">{kw.fr}</p>
+                         <p className="text-[9px] text-slate-400 font-mono tracking-tight">{kw.ipa}</p>
                        </div>
                      </div>
-                     <span className="text-xs text-brand-600 font-black">{kw.zh}</span>
+                     <span className="text-[11px] text-brand-600 font-black shrink-0 ml-2">{kw.zh}</span>
                    </div>
                  ))}
                </div>
@@ -110,24 +127,22 @@ export default function Reading() {
   }
 
   return (
-    <div className="space-y-4">
-      <header className="flex justify-between items-center">
-        <h1 className="text-lg font-black text-slate-800">精选阅读</h1>
-        <div className="text-[10px] text-brand-500 bg-brand-50 px-3 py-1 rounded-full font-black">
+    <div className="space-y-3">
+      <header className="flex justify-between items-center pb-1">
+        <h1 className="text-lg font-black text-slate-900">精选阅读</h1>
+        <div className="text-[9px] text-brand-500 bg-brand-50 px-2.5 py-1 rounded-full font-black tracking-wider">
           {filteredArticles.length} Articles
         </div>
       </header>
 
-      <div className="flex gap-2 overflow-x-auto no-scrollbar">
+      <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
         {['All', 'A1', 'A2', 'B1', 'B2', 'C1'].map((lvl) => (
           <button
             key={lvl}
             onClick={() => setSelectedLevel(lvl as any)}
             className={clsx(
-              "px-4 py-2 rounded-full font-black text-xs transition-all border shrink-0",
-              selectedLevel === lvl 
-                ? "bg-slate-900 border-slate-900 text-white" 
-                : "bg-white border-slate-100 text-slate-400"
+              "px-4 py-1.5 rounded-full font-black text-[11px] transition-all border shrink-0",
+              selectedLevel === lvl ? "bg-slate-900 border-slate-900 text-white shadow-sm" : "bg-white border-slate-100 text-slate-400"
             )}
           >
             {lvl === 'All' ? '全部' : lvl}
@@ -135,33 +150,33 @@ export default function Reading() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-3">
+      <div className="grid grid-cols-1 gap-3 pt-1">
         {filteredArticles.map((art) => (
           <button
             key={art.id}
             onClick={() => setActiveArticleId(art.id)}
-            className="bg-white p-5 rounded-card border border-slate-50 shadow-soft active:scale-95 transition-all text-left flex flex-col gap-3 relative overflow-hidden group"
+            className="bg-white p-4 rounded-card border border-slate-100 shadow-soft active:scale-[0.98] transition-all text-left flex flex-col gap-2 relative overflow-hidden group"
           >
-            <div className="absolute top-[-20px] right-[-20px] opacity-[0.03] group-hover:scale-110 transition-transform">
-              <BookOpen size={100} />
+            <div className="absolute top-[-15px] right-[-15px] opacity-[0.03] text-slate-900">
+              <BookOpen size={80} />
             </div>
             
             <div className="flex items-center justify-between relative z-10">
-              <span className="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-md text-[9px] font-black uppercase">
+              <span className="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-md text-[8px] font-black uppercase tracking-widest">
                 {art.level}
               </span>
-              <div className="flex items-center gap-1.5 text-slate-300">
-                 <Clock size={12} />
-                 <span className="text-[9px] font-bold">~{Math.ceil(art.content_fr.length / 100)} min</span>
+              <div className="flex items-center gap-1 text-slate-300">
+                 <Clock size={10} />
+                 <span className="text-[8px] font-bold">~{Math.ceil(art.content_fr.length / 120)} min</span>
               </div>
             </div>
             
-            <h3 className="text-base font-black text-slate-800 leading-tight relative z-10">
+            <h3 className="text-[15px] font-black text-slate-800 leading-tight relative z-10 truncate group-hover:text-brand-500 transition-colors">
               {art.title}
             </h3>
             
-            <p className="text-slate-400 text-xs font-medium line-clamp-1 relative z-10">
-              {art.content_fr.slice(0, 60)}...
+            <p className="text-slate-400 text-[11px] font-medium line-clamp-1 relative z-10 opacity-70">
+              {art.content_fr.slice(0, 50)}...
             </p>
           </button>
         ))}
