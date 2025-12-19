@@ -7,23 +7,24 @@ interface TTSButtonProps {
   text: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  color?: string; // Standard color override (e.g. for Memory Boost red)
 }
 
-export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', className }) => {
+export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', className, color }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handlePlay = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation(); 
     
-    // Explicit unlock on user gesture
+    // Mandatory unlock on user gesture
     tts.unlock();
     
     setIsPlaying(true);
     await speakFrench(text);
     
-    // Animation/Feedback duration
-    setTimeout(() => setIsPlaying(false), 2000);
+    // Feedback duration
+    setTimeout(() => setIsPlaying(false), 1500);
   };
 
   const iconSizes = {
@@ -43,9 +44,10 @@ export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', classNa
       onClick={handlePlay} 
       className={clsx(
         "flex items-center justify-center text-white transition-all active:scale-90 shadow-md",
-        "bg-[#7ED957] hover:bg-[#6ec948] rounded-full shrink-0",
+        color ? color : "bg-[#7CFC00] hover:bg-[#6ed900]", // Distinct light green (#7CFC00)
+        "rounded-full shrink-0",
         dimensions[size],
-        isPlaying && "ring-4 ring-[#7ED957]/30 scale-110",
+        isPlaying && "ring-4 ring-white/30 scale-110",
         className
       )}
       aria-label="播放读音"

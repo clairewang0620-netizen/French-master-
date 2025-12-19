@@ -16,7 +16,7 @@ export default function Reading() {
   const filteredArticles = readingData.filter(art => selectedLevel === 'All' ? true : art.level === selectedLevel);
 
   useEffect(() => {
-    // Listen to shared TTS status
+    // Sync UI with global TTS status
     tts.registerStatusListener((s) => setPlaybackStatus(s));
     return () => { tts.stop(); };
   }, []);
@@ -51,13 +51,13 @@ export default function Reading() {
         </header>
 
         <article className="bg-white rounded-card p-4 shadow-soft border border-slate-50 space-y-5">
-          {/* Main Control: Icon-only, high visibility */}
+          {/* Main article playback control */}
           <div className="flex justify-center border-b border-slate-50 pb-6 pt-2">
             <button 
               onClick={handleAudioControl}
               className={clsx(
                 "w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-xl active:scale-95",
-                playbackStatus === 'playing' ? "bg-red-500 shadow-red-100" : "bg-[#7ED957] shadow-green-100"
+                playbackStatus === 'playing' ? "bg-[#FF4C4C] shadow-red-100" : "bg-[#7CFC00] shadow-green-100"
               )}
             >
               {playbackStatus === 'playing' ? (

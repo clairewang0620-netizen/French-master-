@@ -1,7 +1,7 @@
 /**
- * Unified TTS Service - Critical Hotfix for iOS & Android
- * iOS: Web Speech API (speechSynthesis)
- * Android: HTML5 Audio (Google TTS MP3) with Managed Queuing
+ * Unified TTS Service - Premium Hotfix for iOS & Android
+ * iOS: Web Speech API (speechSynthesis) - Natural & Reliable
+ * Android: HTML5 Audio (Google TTS) - Guaranteed Compatibility
  */
 
 type PlaybackStatus = 'idle' | 'playing' | 'paused';
@@ -13,23 +13,28 @@ class TTSService {
   private status: PlaybackStatus = 'idle';
   private isUnlocked: boolean = false;
   private isAndroid: boolean = false;
+  private isIOS: boolean = false;
   private onStatusChange?: (status: PlaybackStatus) => void;
   private onEndCallback?: () => void;
 
   constructor() {
     this.audio = new Audio();
     if (typeof window !== 'undefined') {
-      this.isAndroid = /Android/i.test(navigator.userAgent);
+      const ua = navigator.userAgent;
+      this.isAndroid = /Android/i.test(ua);
+      this.isIOS = /iPad|iPhone|iPod/.test(ua);
       this.setupListeners();
     }
   }
 
   private setupListeners() {
+    // For Android (HTML5 Audio)
     this.audio.onended = () => {
       if (this.isAndroid && this.status === 'playing') {
         this.currentIdx++;
         if (this.currentIdx < this.queue.length) {
-          setTimeout(() => this.playNextAndroid(), 500); // 0.5s interval between paragraphs
+          // 0.5s interval between paragraphs as requested
+          setTimeout(() => this.playNextAndroid(), 500);
         } else {
           this.stop();
           if (this.onEndCallback) this.onEndCallback();
@@ -38,22 +43,26 @@ class TTSService {
     };
 
     this.audio.onerror = () => {
-      console.error("Android Audio Error");
+      console.error("Audio playback error");
       this.stop();
     };
   }
 
   /**
-   * Unlock audio context for Android. Call inside user gesture.
+   * CRITICAL: Unlock audio on Android. Must be called inside user gesture.
    */
   public unlock() {
     if (this.isUnlocked) return;
+    
+    // Global flag for general use
+    (window as any).audioUnlocked = true;
+    
     if (this.isAndroid) {
+      // Play 0.1s silent audio to unlock the media stack
       this.audio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA== ";
       this.audio.play().then(() => {
         this.audio.pause();
         this.isUnlocked = true;
-        console.log("Audio Unlocked");
       }).catch(() => {});
     } else {
       this.isUnlocked = true;
@@ -113,7 +122,8 @@ class TTSService {
   }
 
   private segmentText(text: string): string[] {
-    // Split for Google TTS char limit (approx 200)
+    // Split for Google TTS character limits (approx 200 chars)
+    // Helps creating natural gaps in articles
     return text.split(/([.!?\n]+)/).reduce((acc: string[], cur, i) => {
       if (i % 2 === 0) {
         if (cur.trim()) acc.push(cur.trim());
@@ -136,10 +146,12 @@ class TTSService {
       this.setStatus('playing');
       this.playNextAndroid();
     } else {
-      // iOS / Desktop Native TTS
+      // iOS / Desktop (speechSynthesis)
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 1.0;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      
       utterance.onend = () => {
         this.setStatus('idle');
         if (this.onEndCallback) this.onEndCallback();
