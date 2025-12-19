@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Volume2 } from 'lucide-react';
-import { speakFrench } from '../lib/tts';
+import { tts, speakFrench } from '../lib/tts';
 import { clsx } from 'clsx';
 
 interface TTSButtonProps {
   text: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-  label?: string; // Kept for interface compatibility but ignored for icon-only mandate
+  label?: string; 
 }
 
 export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', className }) => {
@@ -17,10 +17,13 @@ export const TTSButton: React.FC<TTSButtonProps> = ({ text, size = 'md', classNa
     e.preventDefault();
     e.stopPropagation(); 
     
+    // Explicitly call unlock on user gesture for Android
+    tts.unlock();
+    
     setIsPlaying(true);
     await speakFrench(text);
     
-    // Pulse animation reset
+    // Simple visual feedback
     setTimeout(() => setIsPlaying(false), 1500);
   };
 

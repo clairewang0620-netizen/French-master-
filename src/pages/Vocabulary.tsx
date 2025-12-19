@@ -39,7 +39,7 @@ export default function Vocabulary() {
       if (!isFavorite) {
         toggleFavorite(word.id);
       }
-      // Automaticaly advance to next word
+      // Mandatory flow: Auto-advance to next word
       nextCard();
     };
 
@@ -93,7 +93,7 @@ export default function Vocabulary() {
              onClick={handleMemoryBoost}
              className={clsx(
                "col-span-1 h-10 rounded-btn flex items-center justify-center transition-all active:scale-95 shadow-soft border",
-               "bg-danger text-white border-danger"
+               "bg-[#E53935] text-white border-[#E53935]"
              )}
            >
              <Flame size={18} fill="white" />
@@ -142,7 +142,7 @@ export default function Vocabulary() {
               className="bg-white p-3.5 rounded-card border border-slate-100 shadow-soft active:bg-slate-50 flex items-center justify-between group"
             >
               <div className="flex items-center gap-3 overflow-hidden">
-                <div className={clsx("w-1.5 h-1.5 rounded-full shrink-0", isFav ? "bg-danger" : "bg-slate-200")} />
+                <div className={clsx("w-1.5 h-1.5 rounded-full shrink-0", isFav ? "bg-[#E53935]" : "bg-slate-200")} />
                 <div className="overflow-hidden">
                   <p className="font-bold text-[14px] text-slate-800 truncate">{word.fr}</p>
                   <p className="text-slate-400 font-medium text-[11px] truncate">{word.cn}</p>

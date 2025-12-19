@@ -1,6 +1,7 @@
 /**
  * Advanced TTS Service for Cross-Platform Compatibility (Android & iOS)
- * Optimized for long-text playback with Pause/Resume and natural pacing
+ * Android: Uses HTML5 Audio with remote MP3 TTS endpoint.
+ * iOS/Desktop: Uses Web Speech API.
  */
 
 type PlaybackStatus = 'idle' | 'playing' | 'paused';
@@ -13,14 +14,24 @@ class TTSService {
   private status: PlaybackStatus = 'idle';
   private onEndCallback?: () => void;
   private onStatusChange?: (status: PlaybackStatus) => void;
+  
+  // Android Specific
+  private audioInstance: HTMLAudioElement | null = null;
+  private isAndroid: boolean = false;
+  private isUnlocked: boolean = false;
 
   constructor() {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      this.init();
+    if (typeof window !== 'undefined') {
+      this.isAndroid = /Android/i.test(navigator.userAgent);
+      if (this.isAndroid) {
+        this.audioInstance = new Audio();
+      } else if ('speechSynthesis' in window) {
+        this.initWebSpeech();
+      }
     }
   }
 
-  private init() {
+  private initWebSpeech() {
     const loadVoices = () => {
       this.voices = window.speechSynthesis.getVoices();
       this.selectedVoice = 
@@ -49,8 +60,26 @@ class TTSService {
     this.onStatusChange = cb;
   }
 
+  /**
+   * Unlock audio context on first user interaction for Android
+   */
+  public unlock() {
+    if (this.isAndroid && this.audioInstance && !this.isUnlocked) {
+      // Play and immediately pause to unlock the audio context via user gesture
+      this.audioInstance.play().then(() => {
+        this.audioInstance?.pause();
+      }).catch(() => {});
+      this.isUnlocked = true;
+    }
+  }
+
   public stop() {
-    window.speechSynthesis.cancel();
+    if (this.isAndroid && this.audioInstance) {
+      this.audioInstance.pause();
+      this.audioInstance.src = '';
+    } else {
+      window.speechSynthesis.cancel();
+    }
     this.queue = [];
     this.currentIdx = -1;
     this.setStatus('idle');
@@ -58,7 +87,11 @@ class TTSService {
 
   public pause() {
     if (this.status === 'playing') {
-      window.speechSynthesis.cancel(); 
+      if (this.isAndroid && this.audioInstance) {
+        this.audioInstance.pause();
+      } else {
+        window.speechSynthesis.cancel(); 
+      }
       this.setStatus('paused');
     }
   }
@@ -73,10 +106,11 @@ class TTSService {
   public async speak(text: string, onEnd?: () => void) {
     if (!text) return;
     
-    window.speechSynthesis.cancel();
+    this.unlock(); 
+    this.stop();
     this.onEndCallback = onEnd;
     
-    // Split text into manageable segments for mobile stability and natural phrasing
+    // Split text into manageable segments for natural flow and API limits
     this.queue = text.split(/([.!?\n]+)/).reduce((acc: string[], cur, i) => {
       if (i % 2 === 0) {
         if (cur.trim()) acc.push(cur.trim());
@@ -90,8 +124,6 @@ class TTSService {
     
     this.currentIdx = 0;
     this.setStatus('playing');
-
-    // Small buffer for engine reset
     setTimeout(() => this.playNext(), 50);
   }
 
@@ -104,27 +136,43 @@ class TTSService {
       return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(this.queue[this.currentIdx]);
-    utterance.lang = 'fr-FR';
-    utterance.rate = 1.0; // Optimized for natural French flow
-    utterance.pitch = 1.0;
-    if (this.selectedVoice) utterance.voice = this.selectedVoice;
+    const currentText = this.queue[this.currentIdx];
 
-    utterance.onend = () => {
-      if (this.status === 'playing') {
-        this.currentIdx++;
-        // Reduced delay (50ms) for continuous reading experience
-        setTimeout(() => this.playNext(), 50);
-      }
-    };
+    if (this.isAndroid && this.audioInstance) {
+      // Secure and reliable TTS endpoint for Android
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(currentText)}&tl=fr&client=tw-ob`;
+      this.audioInstance.src = url;
+      this.audioInstance.onended = () => {
+        if (this.status === 'playing') {
+          this.currentIdx++;
+          setTimeout(() => this.playNext(), 60); // Natural breathing pause
+        }
+      };
+      this.audioInstance.onerror = () => this.stop();
+      this.audioInstance.play().catch(() => this.stop());
+    } else {
+      // Web Speech API with optimized parameters
+      const utterance = new SpeechSynthesisUtterance(currentText);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      if (this.selectedVoice) utterance.voice = this.selectedVoice;
 
-    utterance.onerror = (e: any) => {
-      if (e.error !== 'interrupted' && e.error !== 'canceled') {
-        this.stop();
-      }
-    };
+      utterance.onend = () => {
+        if (this.status === 'playing') {
+          this.currentIdx++;
+          setTimeout(() => this.playNext(), 60);
+        }
+      };
 
-    window.speechSynthesis.speak(utterance);
+      utterance.onerror = (e: any) => {
+        if (e.error !== 'interrupted' && e.error !== 'canceled') {
+          this.stop();
+        }
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
   }
 }
 
